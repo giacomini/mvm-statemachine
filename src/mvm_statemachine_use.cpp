@@ -8,8 +8,12 @@
 
 #include <iostream>
 using namespace std;
+#include "MVM.h"
 
 int main() {
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	MVM mvm;
+	for (int i = 0; i < 100; i++){
+		mvm.step();
+	}
 	return 0;
 }

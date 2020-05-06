@@ -17,6 +17,8 @@ public:
 	virtual ~MVM();
 	// some methods
 	void runAction();
+	//
+	void step();
 };
 
 #endif /* MVM_H_ */
