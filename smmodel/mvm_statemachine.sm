@@ -1,0 +1,27 @@
+%class MMVStateMachine
+%header MVM.h
+%start MainMap::Locked
+%map MainMap
+%%
+StartUpMode
+{
+	coin Unlocked{ unlock(); }
+	pass nil{ alarm(); }
+}
+PCV_VentilationOff
+{
+	pass Locked{ lock(); }
+	coin nil{ thankyou();}
+}
+PCV_Inspiration
+{
+	pass Locked{ lock(); }
+	coin nil{ thankyou();}
+}
+PCV_Expiration
+{
+	pass Locked{ lock(); }
+	coin nil{ thankyou();}
+}
+
+%%
