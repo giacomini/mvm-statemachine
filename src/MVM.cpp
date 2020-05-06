@@ -6,13 +6,16 @@
  */
 
 #include "MVM.h"
+#include "MVM_sm.h"
 
-MVM::MVM() {
+MVM::MVM():fsm(*this){;
 	// TODO Auto-generated constructor stub
-
 }
 
 MVM::~MVM() {
 	// TODO Auto-generated destructor stub
+}
+
+void MVM::runAction() {
 }
 

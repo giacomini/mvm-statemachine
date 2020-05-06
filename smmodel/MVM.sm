@@ -1,0 +1,21 @@
+%class MVM
+%header MVM.h
+%start MainMap::StartUpMode
+%map MainMap
+%%
+StartUpMode
+{
+	switchon PCV_VentilationOff{}
+}
+PCV_VentilationOff
+{
+	run PCV_Inspiration{ }
+}
+PCV_Inspiration
+{
+}
+PCV_Expiration
+{
+}
+
+%%
