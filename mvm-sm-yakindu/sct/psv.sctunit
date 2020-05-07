@@ -2,8 +2,6 @@ testclass psv for statechart MVMStateMachine {
 	
 	@Test
 	operation testNormalOperation() {
-		inspiration_duration_ms = 1000
-		expiration_duration_ms = 1200
 		enter
 		assert active(main_region.StartUp)
 		raise setMode :MVM_mode.P_SUPPORTED_V
@@ -11,7 +9,49 @@ testclass psv for statechart MVMStateMachine {
 		assert active(main_region.PSV)
 		assert active(main_region.PSV.r1.off)
 		raise run
+		proceed 1 cycle
+		// enter inspiration
 		assert active(main_region.PSV.r1.Inspiration)
+		mock hal.value.flowDrop returns (false)	
+		proceed 100 ms
+		assert active(main_region.PSV.r1.Inspiration)
+		// drop in flow -> go tot expiration
+		mock hal.value.flowDrop returns (true)	
+		proceed 1 cycle
+		assert active(main_region.PSV.r1.Expiration)
+		mock hal.value.getPressure() returns (20.0)	
+		proceed 200 ms
+		assert active(main_region.PSV.r1.Expiration)
+		// now drop in pressure
+		mock hal.value.getPressure() returns (5.0)	
+		proceed 1 cycle
+		assert active(main_region.PSV.r1.Inspiration)
+		exit
+	}
+	@Test
+	operation testApneaLag() {
+		apnealag = 5000
+		enter
+		assert active(main_region.StartUp)
+		raise setMode :MVM_mode.P_SUPPORTED_V
+		proceed 1 cycle	
+		assert active(main_region.PSV)
+		assert active(main_region.PSV.r1.off)
+		raise run
+		proceed 1 cycle
+		// enter inspiration
+		assert active(main_region.PSV.r1.Inspiration)
+		mock hal.value.flowDrop returns (false)	
+		proceed 100 ms
+		assert active(main_region.PSV.r1.Inspiration)
+		// drop in flow -> go tot expiration
+		mock hal.value.flowDrop returns (true)	
+		proceed 1 cycle
+		assert active(main_region.PSV.r1.Expiration)
+		mock hal.value.getPressure() returns (20.0)
+		// proceed more than apnea lag	
+		proceed 5000 ms
+		assert active(main_region.PCV.r1.Inspiration)
 		exit
 	}
 }

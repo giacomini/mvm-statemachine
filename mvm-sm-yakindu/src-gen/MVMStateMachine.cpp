@@ -374,17 +374,17 @@ void MVMStateMachine::set_min_expiration_time(int16_t value)
 
 // implementations of all internal functions
 
-sc_boolean MVMStateMachine::check_main_region__choice_0_tr1_tr1()
+sc_boolean MVMStateMachine::check_main_region_PCV_r1__choice_0_tr0_tr0()
 {
 	return iface.exp_pause_button;
 }
 
-void MVMStateMachine::effect_main_region__choice_0_tr1()
+void MVMStateMachine::effect_main_region_PCV_r1__choice_0_tr0()
 {
 	enseq_main_region_PCV_r1_PauseExpiration_default();
 }
 
-void MVMStateMachine::effect_main_region__choice_0_tr0()
+void MVMStateMachine::effect_main_region_PCV_r1__choice_0_tr1()
 {
 	enseq_main_region_PCV_r1_Inspiration_default();
 }
@@ -751,15 +751,15 @@ void MVMStateMachine::exseq_main_region_PSV_r1()
 }
 
 /* The reactions of state null. */
-void MVMStateMachine::react_main_region__choice_0()
+void MVMStateMachine::react_main_region_PCV_r1__choice_0()
 {
 	/* The reactions of state null. */
-	if (check_main_region__choice_0_tr1_tr1())
+	if (check_main_region_PCV_r1__choice_0_tr0_tr0())
 	{ 
-		effect_main_region__choice_0_tr1();
+		effect_main_region_PCV_r1__choice_0_tr0();
 	}  else
 	{
-		effect_main_region__choice_0_tr0();
+		effect_main_region_PCV_r1__choice_0_tr1();
 	}
 }
 
@@ -851,8 +851,8 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_Expiration_react(const sc_boolean
 		{ 
 			if (timeEvents[1])
 			{ 
-				exseq_main_region_PCV();
-				react_main_region__choice_0();
+				exseq_main_region_PCV_r1_Expiration();
+				react_main_region_PCV_r1__choice_0();
 			}  else
 			{
 				if (((*(iface.hal)).getPressure()) < (10))

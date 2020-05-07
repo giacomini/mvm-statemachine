@@ -257,9 +257,9 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		
 		// prototypes of all internal functions
 		
-		sc_boolean check_main_region__choice_0_tr1_tr1();
-		void effect_main_region__choice_0_tr1();
-		void effect_main_region__choice_0_tr0();
+		sc_boolean check_main_region_PCV_r1__choice_0_tr0_tr0();
+		void effect_main_region_PCV_r1__choice_0_tr0();
+		void effect_main_region_PCV_r1__choice_0_tr1();
 		void enact_main_region_PCV_r1_PauseExpiration();
 		void enact_main_region_PCV_r1_Expiration();
 		void enact_main_region_PCV_r1_Inspiration();
@@ -294,7 +294,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void exseq_main_region();
 		void exseq_main_region_PCV_r1();
 		void exseq_main_region_PSV_r1();
-		void react_main_region__choice_0();
+		void react_main_region_PCV_r1__choice_0();
 		void react_main_region__entry_Default();
 		sc_boolean react();
 		sc_boolean main_region_StartUp_react(const sc_boolean try_transition);

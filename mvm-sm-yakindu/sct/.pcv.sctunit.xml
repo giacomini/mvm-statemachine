@@ -1,0 +1,8 @@
+<testsuite name="default" time="">
+  <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#default.testNormalOperation" time="">
+  </testcase>
+  <testcase name="testStop" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#default.testStop" time="">
+  </testcase>
+  <testcase name="testPause" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#default.testPause" time="">
+  </testcase>
+</testsuite>
