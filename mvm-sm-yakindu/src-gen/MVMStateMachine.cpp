@@ -77,6 +77,11 @@ void MVMStateMachine::runCycle()
 			main_region_Expiration_react(true);
 			break;
 		}
+		case main_region_StartUp :
+		{
+			main_region_StartUp_react(true);
+			break;
+		}
 		default:
 			break;
 		}
@@ -86,6 +91,7 @@ void MVMStateMachine::runCycle()
 
 void MVMStateMachine::clearInEvents()
 {
+	iface.run_raised = false;
 	timeEvents[0] = false; 
 	timeEvents[1] = false; 
 }
@@ -127,6 +133,9 @@ sc_boolean MVMStateMachine::isStateActive(MVMStateMachineStates state) const
 		case main_region_Expiration : 
 			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_EXPIRATION] == main_region_Expiration
 			);
+		case main_region_StartUp : 
+			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_STARTUP] == main_region_StartUp
+			);
 		default: return false;
 	}
 }
@@ -134,6 +143,15 @@ sc_boolean MVMStateMachine::isStateActive(MVMStateMachineStates state) const
 MVMStateMachine::DefaultSCI* MVMStateMachine::getDefaultSCI()
 {
 	return &iface;
+}
+/* Functions for event run in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_run()
+{
+	run_raised = true;
+}
+void MVMStateMachine::raise_run()
+{
+	iface.raise_run();
 }
 HAL * MVMStateMachine::DefaultSCI::get_hal() const
 {
@@ -206,6 +224,14 @@ void MVMStateMachine::enseq_main_region_Expiration_default()
 	stateConfVectorPosition = 0;
 }
 
+/* 'default' enter sequence for state StartUp */
+void MVMStateMachine::enseq_main_region_StartUp_default()
+{
+	/* 'default' enter sequence for state StartUp */
+	stateConfVector[0] = main_region_StartUp;
+	stateConfVectorPosition = 0;
+}
+
 /* 'default' enter sequence for region main region */
 void MVMStateMachine::enseq_main_region_default()
 {
@@ -231,6 +257,14 @@ void MVMStateMachine::exseq_main_region_Expiration()
 	exact_main_region_Expiration();
 }
 
+/* Default exit sequence for state StartUp */
+void MVMStateMachine::exseq_main_region_StartUp()
+{
+	/* Default exit sequence for state StartUp */
+	stateConfVector[0] = MVMStateMachine_last_state;
+	stateConfVectorPosition = 0;
+}
+
 /* Default exit sequence for region main region */
 void MVMStateMachine::exseq_main_region()
 {
@@ -248,6 +282,11 @@ void MVMStateMachine::exseq_main_region()
 			exseq_main_region_Expiration();
 			break;
 		}
+		case main_region_StartUp :
+		{
+			exseq_main_region_StartUp();
+			break;
+		}
 		default: break;
 	}
 }
@@ -256,7 +295,7 @@ void MVMStateMachine::exseq_main_region()
 void MVMStateMachine::react_main_region__entry_Default()
 {
 	/* Default react sequence for initial entry  */
-	enseq_main_region_Inspiration_default();
+	enseq_main_region_StartUp_default();
 }
 
 sc_boolean MVMStateMachine::react() {
@@ -294,6 +333,26 @@ sc_boolean MVMStateMachine::main_region_Expiration_react(const sc_boolean try_tr
 			if (timeEvents[1])
 			{ 
 				exseq_main_region_Expiration();
+				enseq_main_region_Inspiration_default();
+			}  else
+			{
+				did_transition = false;
+			}
+		} 
+	} 
+	return did_transition;
+}
+
+sc_boolean MVMStateMachine::main_region_StartUp_react(const sc_boolean try_transition) {
+	/* The reactions of state StartUp. */
+	sc_boolean did_transition = try_transition;
+	if (try_transition)
+	{ 
+		if ((react()) == (false))
+		{ 
+			if (iface.run_raised)
+			{ 
+				exseq_main_region_StartUp();
 				enseq_main_region_Inspiration_default();
 			}  else
 			{

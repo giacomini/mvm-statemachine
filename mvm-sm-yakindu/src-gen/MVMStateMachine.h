@@ -16,6 +16,7 @@
 /*! Define indices of states in the StateConfVector */
 #define SCVI_MAIN_REGION_INSPIRATION 0
 #define SCVI_MAIN_REGION_EXPIRATION 0
+#define SCVI_MAIN_REGION_STARTUP 0
 
 
 class MVMStateMachine : public TimedStatemachineInterface, public StatemachineInterface
@@ -30,10 +31,11 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		{
 			MVMStateMachine_last_state,
 			main_region_Inspiration,
-			main_region_Expiration
+			main_region_Expiration,
+			main_region_StartUp
 		} MVMStateMachineStates;
 					
-		static const sc_integer numStates = 2;
+		static const sc_integer numStates = 3;
 		
 		//! Inner class for default interface scope.
 		class DefaultSCI
@@ -46,10 +48,15 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				void set_hal(HAL * value);
 				
 				
+				/*! Raises the in event 'run' that is defined in the default interface scope. */
+				void raise_run();
+				
+				
 				
 			private:
 				friend class MVMStateMachine;
 				HAL * hal;
+				sc_boolean run_raised;
 				
 				
 		};
@@ -62,6 +69,9 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		
 		/*! Sets the value of the variable 'hal' that is defined in the default interface scope. */
 		void set_hal(HAL * value);
+		
+		/*! Raises the in event 'run' that is defined in the default interface scope. */
+		void raise_run();
 		
 		
 		/*
@@ -138,14 +148,17 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void exact_main_region_Expiration();
 		void enseq_main_region_Inspiration_default();
 		void enseq_main_region_Expiration_default();
+		void enseq_main_region_StartUp_default();
 		void enseq_main_region_default();
 		void exseq_main_region_Inspiration();
 		void exseq_main_region_Expiration();
+		void exseq_main_region_StartUp();
 		void exseq_main_region();
 		void react_main_region__entry_Default();
 		sc_boolean react();
 		sc_boolean main_region_Inspiration_react(const sc_boolean try_transition);
 		sc_boolean main_region_Expiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_StartUp_react(const sc_boolean try_transition);
 		void clearInEvents();
 		void clearOutEvents();
 		
