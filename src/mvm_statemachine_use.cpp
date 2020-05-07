@@ -12,6 +12,10 @@ using namespace std;
 
 int main() {
 	MVM mvm;
+	//
+	mvm.perfromSetup();
+	//
+	mvm.run();
 	for (int i = 0; i < 100; i++){
 		mvm.step();
 	}

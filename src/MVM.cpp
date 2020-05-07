@@ -21,5 +21,10 @@ void MVM::runAction() {
 
 void MVM::step() {
 
-
 }
+
+void MVM::perfromSetup(){
+	fsm.getState().
+}
+	//
+	void MVM::run();

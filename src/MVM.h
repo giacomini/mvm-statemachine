@@ -19,6 +19,12 @@ public:
 	void runAction();
 	//
 	void step();
+	//
+	void perfromSetup();
+	//
+	void run();
+
+
 };
 
 #endif /* MVM_H_ */
