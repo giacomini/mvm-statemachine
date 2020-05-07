@@ -10,6 +10,7 @@
 #include <chrono>
 #include "MVMStateMachine.h"
 #include "CPPTimerInterface.h"
+#include "MVMStateMachineOCBs.h"
 
 using namespace std;
 
@@ -20,6 +21,8 @@ int main() {
 	MVMStateMachine sm;
 	HAL myHAL;
 	sm.set_hal(&myHAL);
+	MVMStateMachineOCBs operationCallback(&sm);
+	sm.setDefaultSCI_OCB(&operationCallback);
 	std::cout << "init state machine" << std::endl;
 	sm.set_inspiration_duration_ms(1000);
 	sm.set_expiration_duration_ms(2000);

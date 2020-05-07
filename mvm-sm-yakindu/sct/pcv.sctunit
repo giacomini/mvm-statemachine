@@ -7,6 +7,10 @@ testclass ^default for statechart MVMStateMachine {
 		mock hal.value.getPressure() returns (20.0)		
 		enter
 		assert active(main_region.StartUp)
+		raise loadFinished	
+		proceed 1 cycle	
+		assert active(main_region.PCV)
+		assert active(main_region.PCV.r1.off)
 		raise run	
 		proceed 1 cycle	
 		assert active(main_region.PCV.r1.Inspiration)
@@ -61,9 +65,9 @@ testclass ^default for statechart MVMStateMachine {
 		exp_pause_button = true // pause but the exp must finish
 		assert active(main_region.PCV.r1.Expiration)
 		proceed 1900 ms // now it can go to pause
-		assert active(main_region.PCV.r1.PauseExpiration)
+		assert active(main_region.PCV.r1.ExpirationPause)
 		proceed 50 ms
-		assert active(main_region.PCV.r1.PauseExpiration)
+		assert active(main_region.PCV.r1.ExpirationPause)
 		exp_pause_button = false // quit pause
 		proceed 1 cycle 
 		assert active(main_region.PCV.r1.Inspiration)
