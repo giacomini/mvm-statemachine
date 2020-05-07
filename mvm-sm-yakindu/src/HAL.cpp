@@ -17,9 +17,23 @@ HAL::~HAL() {
 }
 
 void HAL::startExpiration(){
-	std::cout<< "starting expiration " << std::endl;
+	std::cout<< "starting expiration - out open" << std::endl;
 }
 void HAL::startInspiration(){
-	std::cout<< "starting inspiration " << std::endl;
+	std::cout<< "starting inspiration - in open" << std::endl;
+}
+void HAL::endExpiration(){
+	std::cout<< "end expiration - out close" << std::endl;
+}
+void HAL::endInspiration(){
+	std::cout<< "end inspiration - in close" << std::endl;
+}
 
+double HAL::getPressure(){
+	std::cout<< "reading pressure " << std::endl;
+	return 20;
+}
+
+bool HAL::flowDrop(){
+	return true;
 }

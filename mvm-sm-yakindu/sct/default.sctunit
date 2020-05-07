@@ -1,0 +1,69 @@
+testclass ^default for statechart MVMStateMachine {
+	
+	@Test
+	operation testNormalOperation() {
+		inspiration_duration_ms = 1000
+		expiration_duration_ms = 1200
+		mock hal.value.getPressure() returns (20.0)		
+		enter
+		assert active(main_region.StartUp)
+		raise run	
+		proceed 1 cycle	
+		assert active(main_region.PCV.r1.Inspiration)
+		proceed 1000 ms			
+		assert active(main_region.PCV.r1.Expiration)
+		proceed 1200 ms			
+		assert active(main_region.PCV.r1.Inspiration)
+		proceed 500 ms			
+		assert active(main_region.PCV.r1.Inspiration)
+		proceed 500 ms			
+		assert active(main_region.PCV.r1.Expiration) 
+		proceed 1 cycle
+		assert active(main_region.PCV.r1.Expiration) 
+		proceed 1200 ms			
+		assert active(main_region.PCV.r1.Inspiration)
+		exit
+	}
+	@Test
+	operation testStop() {
+		inspiration_duration_ms = 1000
+		expiration_duration_ms = 2000
+		mock hal.value.getPressure() returns (20.0)		
+		enter
+		assert active(main_region.StartUp)
+		raise run	
+		proceed 1 cycle	
+		assert active(main_region.PCV.r1.Inspiration)
+		proceed 1000 ms			
+		assert active(main_region.PCV.r1.Expiration)
+		proceed 100 ms
+		assert active(main_region.PCV.r1.Expiration)
+		//arrives a stop			
+		raise stop
+		proceed 1 cycle	
+		assert active(main_region.StartUp)
+		exit
+	}
+	
+	@Test
+	operation testPause() {
+		inspiration_duration_ms = 1000
+		expiration_duration_ms = 2000
+		mock hal.value.getPressure() returns (20.0)		
+		enter
+		assert active(main_region.StartUp)
+		raise run	
+		proceed 1 cycle	
+		assert active(main_region.PCV.r1.Inspiration)
+		proceed 1000 ms			
+		assert active(main_region.PCV.r1.Expiration)
+		proceed 100 ms
+		assert active(main_region.PCV.r1.Expiration)
+		//arrives a stop			
+		raise stop
+		proceed 1 cycle	
+		assert active(main_region.StartUp)
+		exit
+	}
+	
+}

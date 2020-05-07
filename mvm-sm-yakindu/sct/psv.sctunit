@@ -1,0 +1,17 @@
+testclass psv for statechart MVMStateMachine {
+	
+	@Test
+	operation testNormalOperation() {
+		inspiration_duration_ms = 1000
+		expiration_duration_ms = 1200
+		enter
+		assert active(main_region.StartUp)
+		raise setMode :MVM_mode.P_SUPPORTED_V
+		proceed 1 cycle	
+		assert active(main_region.PSV)
+		assert active(main_region.PSV.r1.off)
+		raise run
+		assert active(main_region.PSV.r1.Inspiration)
+		exit
+	}
+}

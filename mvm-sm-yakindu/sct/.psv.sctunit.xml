@@ -1,0 +1,4 @@
+<testsuite name="psv" time="">
+  <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/psv.sctunit#psv.testNormalOperation" time="">
+  </testcase>
+</testsuite>

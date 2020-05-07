@@ -21,6 +21,8 @@ int main() {
 	HAL myHAL;
 	sm.set_hal(&myHAL);
 	std::cout << "init state machine" << std::endl;
+	sm.set_inspiration_duration_ms(1000);
+	sm.set_expiration_duration_ms(2000);
 	sm.init();
 	std::cout << "setting timer" << std::endl;
 	sm.setTimer(&timer_sct);
@@ -29,15 +31,22 @@ int main() {
 	for (;;) {
 		auto end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end - start;
-		// after 2 seconds
-		if (elapsed_seconds.count() > 2 && !running) {
-			std::cout << "running" << std::endl;
+		long sec = elapsed_seconds.count();
+		// after 2 seconds run it
+		if (sec > 2 && sec < 4 && ! running){
+			std::cout << "start running" << std::endl;
 			running = true;
 			sm.raise_run();
 		}
+		// after 4 seconds stop it
+		if (sec > 4 && running) {
+			std::cout << "stopping" << std::endl;
+			running = false;
+			sm.raise_stop();
+		}
 		sm.runCycle();
-		timer_sct.updateActiveTimer(&sm, 100); // 100 milliseconds
-		if (elapsed_seconds.count() > 5)
+		timer_sct.updateActiveTimer(&sm, 100); // 10 milliseconds
+		if (sec > 5)
 			break;
 	}
 	return 0;

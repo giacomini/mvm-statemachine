@@ -73,6 +73,7 @@ public:
 
 class CPPTimerInterface : public TimerInterface{
 private:
+	// here dynamic allocation will be used to fill the tasks
 	TimerTask* tasks[MAX_TIMER];
 public:
 

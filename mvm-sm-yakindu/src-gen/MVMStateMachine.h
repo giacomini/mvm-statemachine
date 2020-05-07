@@ -14,9 +14,16 @@
 
 
 /*! Define indices of states in the StateConfVector */
-#define SCVI_MAIN_REGION_INSPIRATION 0
-#define SCVI_MAIN_REGION_EXPIRATION 0
 #define SCVI_MAIN_REGION_STARTUP 0
+#define SCVI_MAIN_REGION_PCV 0
+#define SCVI_MAIN_REGION_PCV_R1_PAUSEEXPIRATION 0
+#define SCVI_MAIN_REGION_PCV_R1_EXPIRATION 0
+#define SCVI_MAIN_REGION_PCV_R1_INSPIRATION 0
+#define SCVI_MAIN_REGION_PSV 0
+#define SCVI_MAIN_REGION_PSV_R1_PAUSEEXPIRATION 0
+#define SCVI_MAIN_REGION_PSV_R1_EXPIRATION 0
+#define SCVI_MAIN_REGION_PSV_R1_INSPIRATION 0
+#define SCVI_MAIN_REGION_PSV_R1_OFF 0
 
 
 class MVMStateMachine : public TimedStatemachineInterface, public StatemachineInterface
@@ -30,12 +37,19 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		typedef enum
 		{
 			MVMStateMachine_last_state,
-			main_region_Inspiration,
-			main_region_Expiration,
-			main_region_StartUp
+			main_region_StartUp,
+			main_region_PCV,
+			main_region_PCV_r1_PauseExpiration,
+			main_region_PCV_r1_Expiration,
+			main_region_PCV_r1_Inspiration,
+			main_region_PSV,
+			main_region_PSV_r1_PauseExpiration,
+			main_region_PSV_r1_Expiration,
+			main_region_PSV_r1_Inspiration,
+			main_region_PSV_r1_off
 		} MVMStateMachineStates;
 					
-		static const sc_integer numStates = 3;
+		static const sc_integer numStates = 10;
 		
 		//! Inner class for default interface scope.
 		class DefaultSCI
@@ -52,11 +66,70 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				void raise_run();
 				
 				
+				/*! Raises the in event 'stop' that is defined in the default interface scope. */
+				void raise_stop();
+				
+				
+				/*! Raises the in event 'setMode' that is defined in the default interface scope. */
+				void raise_setMode(MVM_mode value);
+				
+				
+				/*! Gets the value of the variable 'inspiration_duration_ms' that is defined in the default interface scope. */
+				int16_t get_inspiration_duration_ms() const;
+				
+				/*! Sets the value of the variable 'inspiration_duration_ms' that is defined in the default interface scope. */
+				void set_inspiration_duration_ms(int16_t value);
+				
+				
+				/*! Gets the value of the variable 'expiration_duration_ms' that is defined in the default interface scope. */
+				int16_t get_expiration_duration_ms() const;
+				
+				/*! Sets the value of the variable 'expiration_duration_ms' that is defined in the default interface scope. */
+				void set_expiration_duration_ms(int16_t value);
+				
+				
+				/*! Gets the value of the variable 'max_exp_pause' that is defined in the default interface scope. */
+				int16_t get_max_exp_pause() const;
+				
+				/*! Sets the value of the variable 'max_exp_pause' that is defined in the default interface scope. */
+				void set_max_exp_pause(int16_t value);
+				
+				
+				/*! Gets the value of the variable 'exp_pause_button' that is defined in the default interface scope. */
+				sc_boolean get_exp_pause_button() const;
+				
+				/*! Sets the value of the variable 'exp_pause_button' that is defined in the default interface scope. */
+				void set_exp_pause_button(sc_boolean value);
+				
+				
+				/*! Gets the value of the variable 'apnealag' that is defined in the default interface scope. */
+				int16_t get_apnealag() const;
+				
+				/*! Sets the value of the variable 'apnealag' that is defined in the default interface scope. */
+				void set_apnealag(int16_t value);
+				
+				
+				/*! Gets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
+				int16_t get_min_expiration_time() const;
+				
+				/*! Sets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
+				void set_min_expiration_time(int16_t value);
+				
+				
 				
 			private:
 				friend class MVMStateMachine;
 				HAL * hal;
 				sc_boolean run_raised;
+				sc_boolean stop_raised;
+				sc_boolean setMode_raised;
+				MVM_mode setMode_value;
+				int16_t inspiration_duration_ms;
+				int16_t expiration_duration_ms;
+				int16_t max_exp_pause;
+				sc_boolean exp_pause_button;
+				int16_t apnealag;
+				int16_t min_expiration_time;
 				
 				
 		};
@@ -72,6 +145,48 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		
 		/*! Raises the in event 'run' that is defined in the default interface scope. */
 		void raise_run();
+		
+		/*! Raises the in event 'stop' that is defined in the default interface scope. */
+		void raise_stop();
+		
+		/*! Raises the in event 'setMode' that is defined in the default interface scope. */
+		void raise_setMode(MVM_mode value);
+		
+		/*! Gets the value of the variable 'inspiration_duration_ms' that is defined in the default interface scope. */
+		int16_t get_inspiration_duration_ms() const;
+		
+		/*! Sets the value of the variable 'inspiration_duration_ms' that is defined in the default interface scope. */
+		void set_inspiration_duration_ms(int16_t value);
+		
+		/*! Gets the value of the variable 'expiration_duration_ms' that is defined in the default interface scope. */
+		int16_t get_expiration_duration_ms() const;
+		
+		/*! Sets the value of the variable 'expiration_duration_ms' that is defined in the default interface scope. */
+		void set_expiration_duration_ms(int16_t value);
+		
+		/*! Gets the value of the variable 'max_exp_pause' that is defined in the default interface scope. */
+		int16_t get_max_exp_pause() const;
+		
+		/*! Sets the value of the variable 'max_exp_pause' that is defined in the default interface scope. */
+		void set_max_exp_pause(int16_t value);
+		
+		/*! Gets the value of the variable 'exp_pause_button' that is defined in the default interface scope. */
+		sc_boolean get_exp_pause_button() const;
+		
+		/*! Sets the value of the variable 'exp_pause_button' that is defined in the default interface scope. */
+		void set_exp_pause_button(sc_boolean value);
+		
+		/*! Gets the value of the variable 'apnealag' that is defined in the default interface scope. */
+		int16_t get_apnealag() const;
+		
+		/*! Sets the value of the variable 'apnealag' that is defined in the default interface scope. */
+		void set_apnealag(int16_t value);
+		
+		/*! Gets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
+		int16_t get_min_expiration_time() const;
+		
+		/*! Sets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
+		void set_min_expiration_time(int16_t value);
 		
 		
 		/*
@@ -113,10 +228,10 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		sc_boolean isStateActive(MVMStateMachineStates state) const;
 		
 		//! number of time events used by the state machine.
-		static const sc_integer timeEventsCount = 2;
+		static const sc_integer timeEventsCount = 6;
 		
 		//! number of time events that can be active at once.
-		static const sc_integer parallelTimeEventsCount = 1;
+		static const sc_integer parallelTimeEventsCount = 2;
 		
 		
 	protected:
@@ -142,23 +257,56 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		
 		// prototypes of all internal functions
 		
-		void enact_main_region_Inspiration();
-		void enact_main_region_Expiration();
-		void exact_main_region_Inspiration();
-		void exact_main_region_Expiration();
-		void enseq_main_region_Inspiration_default();
-		void enseq_main_region_Expiration_default();
+		sc_boolean check_main_region__choice_0_tr1_tr1();
+		void effect_main_region__choice_0_tr1();
+		void effect_main_region__choice_0_tr0();
+		void enact_main_region_PCV_r1_PauseExpiration();
+		void enact_main_region_PCV_r1_Expiration();
+		void enact_main_region_PCV_r1_Inspiration();
+		void enact_main_region_PSV_r1_PauseExpiration();
+		void enact_main_region_PSV_r1_Expiration();
+		void enact_main_region_PSV_r1_Inspiration();
+		void exact_main_region_PCV_r1_PauseExpiration();
+		void exact_main_region_PCV_r1_Expiration();
+		void exact_main_region_PCV_r1_Inspiration();
+		void exact_main_region_PSV_r1_PauseExpiration();
+		void exact_main_region_PSV_r1_Expiration();
+		void exact_main_region_PSV_r1_Inspiration();
 		void enseq_main_region_StartUp_default();
+		void enseq_main_region_PCV_r1_PauseExpiration_default();
+		void enseq_main_region_PCV_r1_Expiration_default();
+		void enseq_main_region_PCV_r1_Inspiration_default();
+		void enseq_main_region_PSV_r1_PauseExpiration_default();
+		void enseq_main_region_PSV_r1_Expiration_default();
+		void enseq_main_region_PSV_r1_Inspiration_default();
+		void enseq_main_region_PSV_r1_off_default();
 		void enseq_main_region_default();
-		void exseq_main_region_Inspiration();
-		void exseq_main_region_Expiration();
 		void exseq_main_region_StartUp();
+		void exseq_main_region_PCV();
+		void exseq_main_region_PCV_r1_PauseExpiration();
+		void exseq_main_region_PCV_r1_Expiration();
+		void exseq_main_region_PCV_r1_Inspiration();
+		void exseq_main_region_PSV();
+		void exseq_main_region_PSV_r1_PauseExpiration();
+		void exseq_main_region_PSV_r1_Expiration();
+		void exseq_main_region_PSV_r1_Inspiration();
+		void exseq_main_region_PSV_r1_off();
 		void exseq_main_region();
+		void exseq_main_region_PCV_r1();
+		void exseq_main_region_PSV_r1();
+		void react_main_region__choice_0();
 		void react_main_region__entry_Default();
 		sc_boolean react();
-		sc_boolean main_region_Inspiration_react(const sc_boolean try_transition);
-		sc_boolean main_region_Expiration_react(const sc_boolean try_transition);
 		sc_boolean main_region_StartUp_react(const sc_boolean try_transition);
+		sc_boolean main_region_PCV_react(const sc_boolean try_transition);
+		sc_boolean main_region_PCV_r1_PauseExpiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_PCV_r1_Expiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_PCV_r1_Inspiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_r1_PauseExpiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_r1_Expiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_r1_Inspiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_r1_off_react(const sc_boolean try_transition);
 		void clearInEvents();
 		void clearOutEvents();
 		
