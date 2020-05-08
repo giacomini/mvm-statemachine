@@ -80,8 +80,12 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				void raise_setMode(MVM_mode value);
 				
 				
-				/*! Raises the in event 'loadFinished' that is defined in the default interface scope. */
-				void raise_loadFinished();
+				/*! Raises the in event 'startupEnded' that is defined in the default interface scope. */
+				void raise_startupEnded();
+				
+				
+				/*! Checks if the out event 'Finish' that is defined in the default interface scope has been raised. */
+				sc_boolean isRaised_finish() const;
 				
 				
 				/*! Gets the value of the variable 'inspiration_duration_ms' that is defined in the default interface scope. */
@@ -149,6 +153,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				
 				
 				
+				
 			private:
 				friend class MVMStateMachine;
 				HAL * hal;
@@ -156,7 +161,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				sc_boolean stop_raised;
 				sc_boolean setMode_raised;
 				MVM_mode setMode_value;
-				sc_boolean loadFinished_raised;
+				sc_boolean startupEnded_raised;
+				sc_boolean Finish_raised;
 				int16_t inspiration_duration_ms;
 				int16_t expiration_duration_ms;
 				int16_t max_exp_pause;
@@ -176,6 +182,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 						virtual ~DefaultSCI_OCB() = 0;
 						
 						virtual sc_boolean pressureTooHighPSV() = 0;
+						
+						virtual void endExpiration() = 0;
 						
 						
 				};
@@ -201,8 +209,11 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		/*! Raises the in event 'setMode' that is defined in the default interface scope. */
 		void raise_setMode(MVM_mode value);
 		
-		/*! Raises the in event 'loadFinished' that is defined in the default interface scope. */
-		void raise_loadFinished();
+		/*! Raises the in event 'startupEnded' that is defined in the default interface scope. */
+		void raise_startupEnded();
+		
+		/*! Checks if the out event 'Finish' that is defined in the default interface scope has been raised. */
+		sc_boolean isRaised_finish() const;
 		
 		/*! Gets the value of the variable 'inspiration_duration_ms' that is defined in the default interface scope. */
 		int16_t get_inspiration_duration_ms() const;
@@ -355,6 +366,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void exact_main_region_PSV_r1_Inspiration();
 		void exact_main_region_PSV_r1_InspiratoryPause();
 		void enseq_main_region_StartUp_default();
+		void enseq_main_region_PCV_default();
 		void enseq_main_region_PCV_r1_ExpirationPause_default();
 		void enseq_main_region_PCV_r1_Expiration_default();
 		void enseq_main_region_PCV_r1_Inspiration_default();
@@ -366,6 +378,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void enseq_main_region_PSV_r1_off_default();
 		void enseq_main_region_PSV_r1_InspiratoryPause_default();
 		void enseq_main_region_default();
+		void enseq_main_region_PCV_r1_default();
 		void exseq_main_region_StartUp();
 		void exseq_main_region_PCV();
 		void exseq_main_region_PCV_r1_ExpirationPause();
@@ -386,6 +399,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void react_main_region_PCV_r1__choice_1();
 		void react_main_region_PSV_r1__choice_0();
 		void react_main_region__entry_Default();
+		void react_main_region_PCV_r1__entry_Default();
 		sc_boolean react();
 		sc_boolean main_region_StartUp_react(const sc_boolean try_transition);
 		sc_boolean main_region_PCV_react(const sc_boolean try_transition);

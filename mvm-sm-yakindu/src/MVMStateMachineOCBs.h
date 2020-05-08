@@ -10,6 +10,8 @@ public:
 	virtual ~MVMStateMachineOCBs();
 
 	sc_boolean pressureTooHighPSV();
+
+	void endExpiration();
 };
 
 #endif /* MVMSTATEMACHINEOCBS_H_ */

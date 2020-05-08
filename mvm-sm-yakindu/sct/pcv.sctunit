@@ -7,7 +7,7 @@ testclass ^default for statechart MVMStateMachine {
 		mock hal.value.getPressure() returns (20.0)		
 		enter
 		assert active(main_region.StartUp)
-		raise loadFinished	
+		raise startupEnded	
 		proceed 1 cycle	
 		assert active(main_region.PCV)
 		assert active(main_region.PCV.r1.off)
