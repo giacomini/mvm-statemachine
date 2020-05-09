@@ -6,6 +6,10 @@
 */
 
 
+const int16_t MVMStateMachine::DefaultSCI::max_exp_pause = 2000;
+const int16_t MVMStateMachine::DefaultSCI::max_ins_pause = 1000;
+const int16_t MVMStateMachine::DefaultSCI::triggerWindowDelay_ms = 700;
+
 
 
 MVMStateMachine::MVMStateMachine()  :
@@ -27,20 +31,20 @@ void MVMStateMachine::init()
 		stateConfVector[i] = MVMStateMachine_last_state;
 	
 	stateConfVectorPosition = 0;
+	
 
 	clearInEvents();
 	clearOutEvents();
 	
 	/* Default init sequence for statechart MVMStateMachine */
-	iface.inspiration_duration_ms = 0;
-	iface.expiration_duration_ms = 0;
-	iface.max_exp_pause = 0;
-	iface.max_ins_pause = 0;
+	iface.testMode = false;
 	iface.exp_pause_button = false;
 	iface.ins_pause_button = false;
-	iface.apnealag = 3000;
+	iface.inspiration_duration_ms = 0;
+	iface.expiration_duration_ms = 0;
 	iface.min_expiration_time = 2000;
 	iface.max_insp_phase_psv = 2000;
+	iface.apnealag = 3000;
 }
 
 void MVMStateMachine::enter()
@@ -69,7 +73,6 @@ sc_boolean MVMStateMachine::isFinal() const
 
 void MVMStateMachine::runCycle()
 {
-	
 	clearOutEvents();
 	for (stateConfVectorPosition = 0;
 		stateConfVectorPosition < maxOrthogonalStates;
@@ -103,9 +106,9 @@ void MVMStateMachine::runCycle()
 			main_region_PCV_r1_InspiratoryPause_react(true);
 			break;
 		}
-		case main_region_PCV_r1_off :
+		case main_region_PCV_r1_ventilationOff :
 		{
-			main_region_PCV_r1_off_react(true);
+			main_region_PCV_r1_ventilationOff_react(true);
 			break;
 		}
 		case main_region_PSV_r1_PauseExpiration :
@@ -123,14 +126,29 @@ void MVMStateMachine::runCycle()
 			main_region_PSV_r1_Inspiration_react(true);
 			break;
 		}
-		case main_region_PSV_r1_off :
+		case main_region_PSV_r1_ventilationOff :
 		{
-			main_region_PSV_r1_off_react(true);
+			main_region_PSV_r1_ventilationOff_react(true);
 			break;
 		}
 		case main_region_PSV_r1_InspiratoryPause :
 		{
 			main_region_PSV_r1_InspiratoryPause_react(true);
+			break;
+		}
+		case main_region_TestMode :
+		{
+			main_region_TestMode_react(true);
+			break;
+		}
+		case main_region_Error :
+		{
+			main_region_Error_react(true);
+			break;
+		}
+		case main_region_PatientSelection :
+		{
+			main_region_PatientSelection_react(true);
 			break;
 		}
 		default:
@@ -142,10 +160,15 @@ void MVMStateMachine::runCycle()
 
 void MVMStateMachine::clearInEvents()
 {
-	iface.run_raised = false;
+	iface.startupEnded_raised = false;
+	iface.resume_raised = false;
+	iface.newPatient_raised = false;
+	iface.testMachine_raised = false;
+	iface.testPassed_raised = false;
+	iface.testFailed_raised = false;
+	iface.startVentilation_raised = false;
 	iface.stop_raised = false;
 	iface.setMode_raised = false;
-	iface.startupEnded_raised = false;
 	timeEvents[0] = false; 
 	timeEvents[1] = false; 
 	timeEvents[2] = false; 
@@ -155,6 +178,7 @@ void MVMStateMachine::clearInEvents()
 	timeEvents[6] = false; 
 	timeEvents[7] = false; 
 	timeEvents[8] = false; 
+	timeEvents[9] = false; 
 }
 
 void MVMStateMachine::clearOutEvents()
@@ -194,7 +218,7 @@ sc_boolean MVMStateMachine::isStateActive(MVMStateMachineStates state) const
 			);
 		case main_region_PCV : 
 			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PCV] >= main_region_PCV
-				&& stateConfVector[SCVI_MAIN_REGION_PCV] <= main_region_PCV_r1_off);
+				&& stateConfVector[SCVI_MAIN_REGION_PCV] <= main_region_PCV_r1_ventilationOff);
 		case main_region_PCV_r1_ExpirationPause : 
 			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PCV_R1_EXPIRATIONPAUSE] == main_region_PCV_r1_ExpirationPause
 			);
@@ -207,8 +231,8 @@ sc_boolean MVMStateMachine::isStateActive(MVMStateMachineStates state) const
 		case main_region_PCV_r1_InspiratoryPause : 
 			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PCV_R1_INSPIRATORYPAUSE] == main_region_PCV_r1_InspiratoryPause
 			);
-		case main_region_PCV_r1_off : 
-			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PCV_R1_OFF] == main_region_PCV_r1_off
+		case main_region_PCV_r1_ventilationOff : 
+			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PCV_R1_VENTILATIONOFF] == main_region_PCV_r1_ventilationOff
 			);
 		case main_region_PSV : 
 			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PSV] >= main_region_PSV
@@ -222,11 +246,20 @@ sc_boolean MVMStateMachine::isStateActive(MVMStateMachineStates state) const
 		case main_region_PSV_r1_Inspiration : 
 			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PSV_R1_INSPIRATION] == main_region_PSV_r1_Inspiration
 			);
-		case main_region_PSV_r1_off : 
-			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PSV_R1_OFF] == main_region_PSV_r1_off
+		case main_region_PSV_r1_ventilationOff : 
+			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PSV_R1_VENTILATIONOFF] == main_region_PSV_r1_ventilationOff
 			);
 		case main_region_PSV_r1_InspiratoryPause : 
 			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PSV_R1_INSPIRATORYPAUSE] == main_region_PSV_r1_InspiratoryPause
+			);
+		case main_region_TestMode : 
+			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_TESTMODE] == main_region_TestMode
+			);
+		case main_region_Error : 
+			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_ERROR] == main_region_Error
+			);
+		case main_region_PatientSelection : 
+			return (sc_boolean) (stateConfVector[SCVI_MAIN_REGION_PATIENTSELECTION] == main_region_PatientSelection
 			);
 		default: return false;
 	}
@@ -236,14 +269,68 @@ MVMStateMachine::DefaultSCI* MVMStateMachine::getDefaultSCI()
 {
 	return &iface;
 }
-/* Functions for event run in interface DefaultSCI */
-void MVMStateMachine::DefaultSCI::raise_run()
+/* Functions for event startupEnded in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_startupEnded()
 {
-	run_raised = true;
+	startupEnded_raised = true;
 }
-void MVMStateMachine::raise_run()
+void MVMStateMachine::raise_startupEnded()
 {
-	iface.raise_run();
+	iface.raise_startupEnded();
+}
+/* Functions for event resume in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_resume()
+{
+	resume_raised = true;
+}
+void MVMStateMachine::raise_resume()
+{
+	iface.raise_resume();
+}
+/* Functions for event newPatient in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_newPatient()
+{
+	newPatient_raised = true;
+}
+void MVMStateMachine::raise_newPatient()
+{
+	iface.raise_newPatient();
+}
+/* Functions for event testMachine in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_testMachine()
+{
+	testMachine_raised = true;
+}
+void MVMStateMachine::raise_testMachine()
+{
+	iface.raise_testMachine();
+}
+/* Functions for event testPassed in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_testPassed()
+{
+	testPassed_raised = true;
+}
+void MVMStateMachine::raise_testPassed()
+{
+	iface.raise_testPassed();
+}
+/* Functions for event testFailed in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_testFailed()
+{
+	testFailed_raised = true;
+}
+void MVMStateMachine::raise_testFailed()
+{
+	iface.raise_testFailed();
+}
+/* Functions for event startVentilation in interface DefaultSCI */
+void MVMStateMachine::DefaultSCI::raise_startVentilation()
+{
+	startVentilation_raised = true;
+}
+void MVMStateMachine::raise_startVentilation()
+{
+	iface.raise_startVentilation();
 }
 /* Functions for event stop in interface DefaultSCI */
 void MVMStateMachine::DefaultSCI::raise_stop()
@@ -264,15 +351,6 @@ void MVMStateMachine::raise_setMode(MVM_mode value)
 {
 	iface.raise_setMode(value);
 }
-/* Functions for event startupEnded in interface DefaultSCI */
-void MVMStateMachine::DefaultSCI::raise_startupEnded()
-{
-	startupEnded_raised = true;
-}
-void MVMStateMachine::raise_startupEnded()
-{
-	iface.raise_startupEnded();
-}
 /* Functions for event Finish in interface DefaultSCI */
 sc_boolean MVMStateMachine::DefaultSCI::isRaised_finish() const
 {
@@ -282,64 +360,24 @@ sc_boolean MVMStateMachine::isRaised_finish() const
 {
 	return iface.isRaised_finish();
 }
-HAL * MVMStateMachine::DefaultSCI::get_hal() const
+sc_boolean MVMStateMachine::DefaultSCI::get_testMode() const
 {
-	return hal;
+	return testMode;
 }
 
-HAL * MVMStateMachine::get_hal() const
+sc_boolean MVMStateMachine::get_testMode() const
 {
-	return iface.hal;
+	return iface.testMode;
 }
 
-void MVMStateMachine::DefaultSCI::set_hal(HAL * value)
+void MVMStateMachine::DefaultSCI::set_testMode(sc_boolean value)
 {
-	this->hal = value;
+	this->testMode = value;
 }
 
-void MVMStateMachine::set_hal(HAL * value)
+void MVMStateMachine::set_testMode(sc_boolean value)
 {
-	iface.hal = value;
-}
-
-int16_t MVMStateMachine::DefaultSCI::get_inspiration_duration_ms() const
-{
-	return inspiration_duration_ms;
-}
-
-int16_t MVMStateMachine::get_inspiration_duration_ms() const
-{
-	return iface.inspiration_duration_ms;
-}
-
-void MVMStateMachine::DefaultSCI::set_inspiration_duration_ms(int16_t value)
-{
-	this->inspiration_duration_ms = value;
-}
-
-void MVMStateMachine::set_inspiration_duration_ms(int16_t value)
-{
-	iface.inspiration_duration_ms = value;
-}
-
-int16_t MVMStateMachine::DefaultSCI::get_expiration_duration_ms() const
-{
-	return expiration_duration_ms;
-}
-
-int16_t MVMStateMachine::get_expiration_duration_ms() const
-{
-	return iface.expiration_duration_ms;
-}
-
-void MVMStateMachine::DefaultSCI::set_expiration_duration_ms(int16_t value)
-{
-	this->expiration_duration_ms = value;
-}
-
-void MVMStateMachine::set_expiration_duration_ms(int16_t value)
-{
-	iface.expiration_duration_ms = value;
+	iface.testMode = value;
 }
 
 int16_t MVMStateMachine::DefaultSCI::get_max_exp_pause() const
@@ -349,17 +387,7 @@ int16_t MVMStateMachine::DefaultSCI::get_max_exp_pause() const
 
 int16_t MVMStateMachine::get_max_exp_pause() const
 {
-	return iface.max_exp_pause;
-}
-
-void MVMStateMachine::DefaultSCI::set_max_exp_pause(int16_t value)
-{
-	this->max_exp_pause = value;
-}
-
-void MVMStateMachine::set_max_exp_pause(int16_t value)
-{
-	iface.max_exp_pause = value;
+	return MVMStateMachine::DefaultSCI::max_exp_pause;
 }
 
 int16_t MVMStateMachine::DefaultSCI::get_max_ins_pause() const
@@ -369,17 +397,7 @@ int16_t MVMStateMachine::DefaultSCI::get_max_ins_pause() const
 
 int16_t MVMStateMachine::get_max_ins_pause() const
 {
-	return iface.max_ins_pause;
-}
-
-void MVMStateMachine::DefaultSCI::set_max_ins_pause(int16_t value)
-{
-	this->max_ins_pause = value;
-}
-
-void MVMStateMachine::set_max_ins_pause(int16_t value)
-{
-	iface.max_ins_pause = value;
+	return MVMStateMachine::DefaultSCI::max_ins_pause;
 }
 
 sc_boolean MVMStateMachine::DefaultSCI::get_exp_pause_button() const
@@ -422,24 +440,54 @@ void MVMStateMachine::set_ins_pause_button(sc_boolean value)
 	iface.ins_pause_button = value;
 }
 
-int16_t MVMStateMachine::DefaultSCI::get_apnealag() const
+int16_t MVMStateMachine::DefaultSCI::get_inspiration_duration_ms() const
 {
-	return apnealag;
+	return inspiration_duration_ms;
 }
 
-int16_t MVMStateMachine::get_apnealag() const
+int16_t MVMStateMachine::get_inspiration_duration_ms() const
 {
-	return iface.apnealag;
+	return iface.inspiration_duration_ms;
 }
 
-void MVMStateMachine::DefaultSCI::set_apnealag(int16_t value)
+void MVMStateMachine::DefaultSCI::set_inspiration_duration_ms(int16_t value)
 {
-	this->apnealag = value;
+	this->inspiration_duration_ms = value;
 }
 
-void MVMStateMachine::set_apnealag(int16_t value)
+void MVMStateMachine::set_inspiration_duration_ms(int16_t value)
 {
-	iface.apnealag = value;
+	iface.inspiration_duration_ms = value;
+}
+
+int16_t MVMStateMachine::DefaultSCI::get_expiration_duration_ms() const
+{
+	return expiration_duration_ms;
+}
+
+int16_t MVMStateMachine::get_expiration_duration_ms() const
+{
+	return iface.expiration_duration_ms;
+}
+
+void MVMStateMachine::DefaultSCI::set_expiration_duration_ms(int16_t value)
+{
+	this->expiration_duration_ms = value;
+}
+
+void MVMStateMachine::set_expiration_duration_ms(int16_t value)
+{
+	iface.expiration_duration_ms = value;
+}
+
+int16_t MVMStateMachine::DefaultSCI::get_triggerWindowDelay_ms() const
+{
+	return triggerWindowDelay_ms;
+}
+
+int16_t MVMStateMachine::get_triggerWindowDelay_ms() const
+{
+	return MVMStateMachine::DefaultSCI::triggerWindowDelay_ms;
 }
 
 int16_t MVMStateMachine::DefaultSCI::get_min_expiration_time() const
@@ -480,6 +528,26 @@ void MVMStateMachine::DefaultSCI::set_max_insp_phase_psv(int16_t value)
 void MVMStateMachine::set_max_insp_phase_psv(int16_t value)
 {
 	iface.max_insp_phase_psv = value;
+}
+
+int16_t MVMStateMachine::DefaultSCI::get_apnealag() const
+{
+	return apnealag;
+}
+
+int16_t MVMStateMachine::get_apnealag() const
+{
+	return iface.apnealag;
+}
+
+void MVMStateMachine::DefaultSCI::set_apnealag(int16_t value)
+{
+	this->apnealag = value;
+}
+
+void MVMStateMachine::set_apnealag(int16_t value)
+{
+	iface.apnealag = value;
 }
 
 void MVMStateMachine::setDefaultSCI_OCB(DefaultSCI_OCB* operationCallback)
@@ -543,7 +611,7 @@ void MVMStateMachine::effect_main_region_PSV_r1__choice_0_tr0()
 void MVMStateMachine::enact_main_region_PCV_r1_ExpirationPause()
 {
 	/* Entry action for state 'ExpirationPause'. */
-	timer->setTimer(this, (sc_eventid)(&timeEvents[0]), iface.max_exp_pause, false);
+	timer->setTimer(this, (sc_eventid)(&timeEvents[0]), MVMStateMachine::DefaultSCI::max_exp_pause, false);
 }
 
 /* Entry action for state 'Expiration'. */
@@ -551,53 +619,54 @@ void MVMStateMachine::enact_main_region_PCV_r1_Expiration()
 {
 	/* Entry action for state 'Expiration'. */
 	timer->setTimer(this, (sc_eventid)(&timeEvents[1]), iface.expiration_duration_ms, false);
-	(*(iface.hal)).startExpiration();
+	timer->setTimer(this, (sc_eventid)(&timeEvents[2]), MVMStateMachine::DefaultSCI::triggerWindowDelay_ms, false);
+	iface_OCB->openOutputValve();
 }
 
 /* Entry action for state 'Inspiration'. */
 void MVMStateMachine::enact_main_region_PCV_r1_Inspiration()
 {
 	/* Entry action for state 'Inspiration'. */
-	timer->setTimer(this, (sc_eventid)(&timeEvents[2]), iface.inspiration_duration_ms, false);
-	(*(iface.hal)).startInspiration();
+	timer->setTimer(this, (sc_eventid)(&timeEvents[3]), iface.inspiration_duration_ms, false);
+	iface_OCB->openInputValve();
 }
 
 /* Entry action for state 'InspiratoryPause'. */
 void MVMStateMachine::enact_main_region_PCV_r1_InspiratoryPause()
 {
 	/* Entry action for state 'InspiratoryPause'. */
-	timer->setTimer(this, (sc_eventid)(&timeEvents[3]), iface.max_ins_pause, false);
+	timer->setTimer(this, (sc_eventid)(&timeEvents[4]), MVMStateMachine::DefaultSCI::max_ins_pause, false);
 }
 
 /* Entry action for state 'PauseExpiration'. */
 void MVMStateMachine::enact_main_region_PSV_r1_PauseExpiration()
 {
 	/* Entry action for state 'PauseExpiration'. */
-	timer->setTimer(this, (sc_eventid)(&timeEvents[4]), iface.max_exp_pause, false);
+	timer->setTimer(this, (sc_eventid)(&timeEvents[5]), MVMStateMachine::DefaultSCI::max_exp_pause, false);
 }
 
 /* Entry action for state 'Expiration'. */
 void MVMStateMachine::enact_main_region_PSV_r1_Expiration()
 {
 	/* Entry action for state 'Expiration'. */
-	timer->setTimer(this, (sc_eventid)(&timeEvents[5]), iface.apnealag, false);
-	timer->setTimer(this, (sc_eventid)(&timeEvents[6]), iface.min_expiration_time, false);
-	(*(iface.hal)).startExpiration();
+	timer->setTimer(this, (sc_eventid)(&timeEvents[6]), iface.apnealag, false);
+	timer->setTimer(this, (sc_eventid)(&timeEvents[7]), iface.min_expiration_time, false);
+	iface_OCB->openOutputValve();
 }
 
 /* Entry action for state 'Inspiration'. */
 void MVMStateMachine::enact_main_region_PSV_r1_Inspiration()
 {
 	/* Entry action for state 'Inspiration'. */
-	timer->setTimer(this, (sc_eventid)(&timeEvents[7]), iface.max_insp_phase_psv, false);
-	(*(iface.hal)).startInspiration();
+	timer->setTimer(this, (sc_eventid)(&timeEvents[8]), iface.max_insp_phase_psv, false);
+	iface_OCB->openInputValve();
 }
 
 /* Entry action for state 'InspiratoryPause'. */
 void MVMStateMachine::enact_main_region_PSV_r1_InspiratoryPause()
 {
 	/* Entry action for state 'InspiratoryPause'. */
-	timer->setTimer(this, (sc_eventid)(&timeEvents[8]), iface.max_ins_pause, false);
+	timer->setTimer(this, (sc_eventid)(&timeEvents[9]), MVMStateMachine::DefaultSCI::max_ins_pause, false);
 }
 
 /* Exit action for state 'ExpirationPause'. */
@@ -612,53 +681,52 @@ void MVMStateMachine::exact_main_region_PCV_r1_Expiration()
 {
 	/* Exit action for state 'Expiration'. */
 	timer->unsetTimer(this, (sc_eventid)(&timeEvents[1]));
-	iface_OCB->endExpiration();
+	timer->unsetTimer(this, (sc_eventid)(&timeEvents[2]));
 }
 
 /* Exit action for state 'Inspiration'. */
 void MVMStateMachine::exact_main_region_PCV_r1_Inspiration()
 {
 	/* Exit action for state 'Inspiration'. */
-	timer->unsetTimer(this, (sc_eventid)(&timeEvents[2]));
-	(*(iface.hal)).endInspiration();
+	timer->unsetTimer(this, (sc_eventid)(&timeEvents[3]));
+	iface_OCB->closeInputValve();
 }
 
 /* Exit action for state 'InspiratoryPause'. */
 void MVMStateMachine::exact_main_region_PCV_r1_InspiratoryPause()
 {
 	/* Exit action for state 'InspiratoryPause'. */
-	timer->unsetTimer(this, (sc_eventid)(&timeEvents[3]));
+	timer->unsetTimer(this, (sc_eventid)(&timeEvents[4]));
 }
 
 /* Exit action for state 'PauseExpiration'. */
 void MVMStateMachine::exact_main_region_PSV_r1_PauseExpiration()
 {
 	/* Exit action for state 'PauseExpiration'. */
-	timer->unsetTimer(this, (sc_eventid)(&timeEvents[4]));
+	timer->unsetTimer(this, (sc_eventid)(&timeEvents[5]));
 }
 
 /* Exit action for state 'Expiration'. */
 void MVMStateMachine::exact_main_region_PSV_r1_Expiration()
 {
 	/* Exit action for state 'Expiration'. */
-	timer->unsetTimer(this, (sc_eventid)(&timeEvents[5]));
 	timer->unsetTimer(this, (sc_eventid)(&timeEvents[6]));
-	(*(iface.hal)).endExpiration();
+	timer->unsetTimer(this, (sc_eventid)(&timeEvents[7]));
 }
 
 /* Exit action for state 'Inspiration'. */
 void MVMStateMachine::exact_main_region_PSV_r1_Inspiration()
 {
 	/* Exit action for state 'Inspiration'. */
-	timer->unsetTimer(this, (sc_eventid)(&timeEvents[7]));
-	(*(iface.hal)).endInspiration();
+	timer->unsetTimer(this, (sc_eventid)(&timeEvents[8]));
+	iface_OCB->closeInputValve();
 }
 
 /* Exit action for state 'InspiratoryPause'. */
 void MVMStateMachine::exact_main_region_PSV_r1_InspiratoryPause()
 {
 	/* Exit action for state 'InspiratoryPause'. */
-	timer->unsetTimer(this, (sc_eventid)(&timeEvents[8]));
+	timer->unsetTimer(this, (sc_eventid)(&timeEvents[9]));
 }
 
 /* 'default' enter sequence for state StartUp */
@@ -712,11 +780,11 @@ void MVMStateMachine::enseq_main_region_PCV_r1_InspiratoryPause_default()
 	stateConfVectorPosition = 0;
 }
 
-/* 'default' enter sequence for state off */
-void MVMStateMachine::enseq_main_region_PCV_r1_off_default()
+/* 'default' enter sequence for state ventilationOff */
+void MVMStateMachine::enseq_main_region_PCV_r1_ventilationOff_default()
 {
-	/* 'default' enter sequence for state off */
-	stateConfVector[0] = main_region_PCV_r1_off;
+	/* 'default' enter sequence for state ventilationOff */
+	stateConfVector[0] = main_region_PCV_r1_ventilationOff;
 	stateConfVectorPosition = 0;
 }
 
@@ -747,11 +815,11 @@ void MVMStateMachine::enseq_main_region_PSV_r1_Inspiration_default()
 	stateConfVectorPosition = 0;
 }
 
-/* 'default' enter sequence for state off */
-void MVMStateMachine::enseq_main_region_PSV_r1_off_default()
+/* 'default' enter sequence for state ventilationOff */
+void MVMStateMachine::enseq_main_region_PSV_r1_ventilationOff_default()
 {
-	/* 'default' enter sequence for state off */
-	stateConfVector[0] = main_region_PSV_r1_off;
+	/* 'default' enter sequence for state ventilationOff */
+	stateConfVector[0] = main_region_PSV_r1_ventilationOff;
 	stateConfVectorPosition = 0;
 }
 
@@ -761,6 +829,30 @@ void MVMStateMachine::enseq_main_region_PSV_r1_InspiratoryPause_default()
 	/* 'default' enter sequence for state InspiratoryPause */
 	enact_main_region_PSV_r1_InspiratoryPause();
 	stateConfVector[0] = main_region_PSV_r1_InspiratoryPause;
+	stateConfVectorPosition = 0;
+}
+
+/* 'default' enter sequence for state TestMode */
+void MVMStateMachine::enseq_main_region_TestMode_default()
+{
+	/* 'default' enter sequence for state TestMode */
+	stateConfVector[0] = main_region_TestMode;
+	stateConfVectorPosition = 0;
+}
+
+/* 'default' enter sequence for state Error */
+void MVMStateMachine::enseq_main_region_Error_default()
+{
+	/* 'default' enter sequence for state Error */
+	stateConfVector[0] = main_region_Error;
+	stateConfVectorPosition = 0;
+}
+
+/* 'default' enter sequence for state PatientSelection */
+void MVMStateMachine::enseq_main_region_PatientSelection_default()
+{
+	/* 'default' enter sequence for state PatientSelection */
+	stateConfVector[0] = main_region_PatientSelection;
 	stateConfVectorPosition = 0;
 }
 
@@ -829,10 +921,10 @@ void MVMStateMachine::exseq_main_region_PCV_r1_InspiratoryPause()
 	exact_main_region_PCV_r1_InspiratoryPause();
 }
 
-/* Default exit sequence for state off */
-void MVMStateMachine::exseq_main_region_PCV_r1_off()
+/* Default exit sequence for state ventilationOff */
+void MVMStateMachine::exseq_main_region_PCV_r1_ventilationOff()
 {
-	/* Default exit sequence for state off */
+	/* Default exit sequence for state ventilationOff */
 	stateConfVector[0] = MVMStateMachine_last_state;
 	stateConfVectorPosition = 0;
 }
@@ -871,10 +963,10 @@ void MVMStateMachine::exseq_main_region_PSV_r1_Inspiration()
 	exact_main_region_PSV_r1_Inspiration();
 }
 
-/* Default exit sequence for state off */
-void MVMStateMachine::exseq_main_region_PSV_r1_off()
+/* Default exit sequence for state ventilationOff */
+void MVMStateMachine::exseq_main_region_PSV_r1_ventilationOff()
 {
-	/* Default exit sequence for state off */
+	/* Default exit sequence for state ventilationOff */
 	stateConfVector[0] = MVMStateMachine_last_state;
 	stateConfVectorPosition = 0;
 }
@@ -886,6 +978,30 @@ void MVMStateMachine::exseq_main_region_PSV_r1_InspiratoryPause()
 	stateConfVector[0] = MVMStateMachine_last_state;
 	stateConfVectorPosition = 0;
 	exact_main_region_PSV_r1_InspiratoryPause();
+}
+
+/* Default exit sequence for state TestMode */
+void MVMStateMachine::exseq_main_region_TestMode()
+{
+	/* Default exit sequence for state TestMode */
+	stateConfVector[0] = MVMStateMachine_last_state;
+	stateConfVectorPosition = 0;
+}
+
+/* Default exit sequence for state Error */
+void MVMStateMachine::exseq_main_region_Error()
+{
+	/* Default exit sequence for state Error */
+	stateConfVector[0] = MVMStateMachine_last_state;
+	stateConfVectorPosition = 0;
+}
+
+/* Default exit sequence for state PatientSelection */
+void MVMStateMachine::exseq_main_region_PatientSelection()
+{
+	/* Default exit sequence for state PatientSelection */
+	stateConfVector[0] = MVMStateMachine_last_state;
+	stateConfVectorPosition = 0;
 }
 
 /* Default exit sequence for region main region */
@@ -920,9 +1036,9 @@ void MVMStateMachine::exseq_main_region()
 			exseq_main_region_PCV_r1_InspiratoryPause();
 			break;
 		}
-		case main_region_PCV_r1_off :
+		case main_region_PCV_r1_ventilationOff :
 		{
-			exseq_main_region_PCV_r1_off();
+			exseq_main_region_PCV_r1_ventilationOff();
 			break;
 		}
 		case main_region_PSV_r1_PauseExpiration :
@@ -940,14 +1056,29 @@ void MVMStateMachine::exseq_main_region()
 			exseq_main_region_PSV_r1_Inspiration();
 			break;
 		}
-		case main_region_PSV_r1_off :
+		case main_region_PSV_r1_ventilationOff :
 		{
-			exseq_main_region_PSV_r1_off();
+			exseq_main_region_PSV_r1_ventilationOff();
 			break;
 		}
 		case main_region_PSV_r1_InspiratoryPause :
 		{
 			exseq_main_region_PSV_r1_InspiratoryPause();
+			break;
+		}
+		case main_region_TestMode :
+		{
+			exseq_main_region_TestMode();
+			break;
+		}
+		case main_region_Error :
+		{
+			exseq_main_region_Error();
+			break;
+		}
+		case main_region_PatientSelection :
+		{
+			exseq_main_region_PatientSelection();
 			break;
 		}
 		default: break;
@@ -981,9 +1112,9 @@ void MVMStateMachine::exseq_main_region_PCV_r1()
 			exseq_main_region_PCV_r1_InspiratoryPause();
 			break;
 		}
-		case main_region_PCV_r1_off :
+		case main_region_PCV_r1_ventilationOff :
 		{
-			exseq_main_region_PCV_r1_off();
+			exseq_main_region_PCV_r1_ventilationOff();
 			break;
 		}
 		default: break;
@@ -1012,9 +1143,9 @@ void MVMStateMachine::exseq_main_region_PSV_r1()
 			exseq_main_region_PSV_r1_Inspiration();
 			break;
 		}
-		case main_region_PSV_r1_off :
+		case main_region_PSV_r1_ventilationOff :
 		{
-			exseq_main_region_PSV_r1_off();
+			exseq_main_region_PSV_r1_ventilationOff();
 			break;
 		}
 		case main_region_PSV_r1_InspiratoryPause :
@@ -1079,7 +1210,7 @@ void MVMStateMachine::react_main_region__entry_Default()
 void MVMStateMachine::react_main_region_PCV_r1__entry_Default()
 {
 	/* Default react sequence for initial entry  */
-	enseq_main_region_PCV_r1_off_default();
+	enseq_main_region_PCV_r1_ventilationOff_default();
 }
 
 sc_boolean MVMStateMachine::react() {
@@ -1097,7 +1228,7 @@ sc_boolean MVMStateMachine::main_region_StartUp_react(const sc_boolean try_trans
 			if (iface.startupEnded_raised)
 			{ 
 				exseq_main_region_StartUp();
-				enseq_main_region_PCV_default();
+				enseq_main_region_PatientSelection_default();
 			}  else
 			{
 				did_transition = false;
@@ -1114,7 +1245,14 @@ sc_boolean MVMStateMachine::main_region_PCV_react(const sc_boolean try_transitio
 	{ 
 		if ((react()) == (false))
 		{ 
-			did_transition = false;
+			if (((iface.stop_raised)) && ((iface.testMode)))
+			{ 
+				exseq_main_region_PCV();
+				enseq_main_region_TestMode_default();
+			}  else
+			{
+				did_transition = false;
+			}
 		} 
 	} 
 	return did_transition;
@@ -1157,12 +1295,14 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_Expiration_react(const sc_boolean
 			if (timeEvents[1])
 			{ 
 				exseq_main_region_PCV_r1_Expiration();
+				iface_OCB->closeOutputValve();
 				react_main_region_PCV_r1__choice_0();
 			}  else
 			{
-				if (((*(iface.hal)).getPressure()) < (10))
+				if (((timeEvents[2])) && ((iface_OCB->dropPressurePCV())))
 				{ 
 					exseq_main_region_PCV_r1_Expiration();
+					iface_OCB->closeOutputValve();
 					enseq_main_region_PCV_r1_Inspiration_default();
 				}  else
 				{
@@ -1170,7 +1310,7 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_Expiration_react(const sc_boolean
 					{ 
 						exseq_main_region_PCV_r1_Expiration();
 						iface.Finish_raised = true;
-						enseq_main_region_PCV_r1_off_default();
+						enseq_main_region_PCV_r1_ventilationOff_default();
 					}  else
 					{
 						did_transition = false;
@@ -1189,7 +1329,7 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_Inspiration_react(const sc_boolea
 	{ 
 		if ((main_region_PCV_react(try_transition)) == (false))
 		{ 
-			if (timeEvents[2])
+			if (timeEvents[3])
 			{ 
 				exseq_main_region_PCV_r1_Inspiration();
 				react_main_region_PCV_r1__choice_1();
@@ -1215,7 +1355,7 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_InspiratoryPause_react(const sc_b
 				enseq_main_region_PCV_r1_Expiration_default();
 			}  else
 			{
-				if (timeEvents[3])
+				if (timeEvents[4])
 				{ 
 					exseq_main_region_PCV_r1_InspiratoryPause();
 					enseq_main_region_PCV_r1_Expiration_default();
@@ -1229,8 +1369,8 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_InspiratoryPause_react(const sc_b
 	return did_transition;
 }
 
-sc_boolean MVMStateMachine::main_region_PCV_r1_off_react(const sc_boolean try_transition) {
-	/* The reactions of state off. */
+sc_boolean MVMStateMachine::main_region_PCV_r1_ventilationOff_react(const sc_boolean try_transition) {
+	/* The reactions of state ventilationOff. */
 	sc_boolean did_transition = try_transition;
 	if (try_transition)
 	{ 
@@ -1239,12 +1379,12 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_off_react(const sc_boolean try_tr
 			if (((iface.setMode_raised)) && (((iface.setMode_value) == (P_SUPPORTED_V))))
 			{ 
 				exseq_main_region_PCV();
-				enseq_main_region_PSV_r1_off_default();
+				enseq_main_region_PSV_r1_ventilationOff_default();
 			}  else
 			{
-				if (iface.run_raised)
+				if (iface.startVentilation_raised)
 				{ 
-					exseq_main_region_PCV_r1_off();
+					exseq_main_region_PCV_r1_ventilationOff();
 					enseq_main_region_PCV_r1_Inspiration_default();
 				}  else
 				{
@@ -1276,7 +1416,7 @@ sc_boolean MVMStateMachine::main_region_PSV_r1_PauseExpiration_react(const sc_bo
 	{ 
 		if ((main_region_PSV_react(try_transition)) == (false))
 		{ 
-			if (timeEvents[4])
+			if (timeEvents[5])
 			{ 
 				exseq_main_region_PSV_r1_PauseExpiration();
 				enseq_main_region_PSV_r1_Inspiration_default();
@@ -1303,25 +1443,36 @@ sc_boolean MVMStateMachine::main_region_PSV_r1_Expiration_react(const sc_boolean
 	{ 
 		if ((main_region_PSV_react(try_transition)) == (false))
 		{ 
-			if (((*(iface.hal)).getPressure()) < (10))
+			if (iface_OCB->dropPressurePSV())
 			{ 
 				exseq_main_region_PSV_r1_Expiration();
+				iface_OCB->closeOutputValve();
 				enseq_main_region_PSV_r1_Inspiration_default();
 			}  else
 			{
-				if (timeEvents[5])
+				if (timeEvents[6])
 				{ 
 					exseq_main_region_PSV();
+					iface_OCB->closeOutputValve();
 					enseq_main_region_PCV_r1_Inspiration_default();
 				}  else
 				{
-					if (((timeEvents[6])) && ((iface.exp_pause_button)))
+					if (((timeEvents[7])) && ((iface.exp_pause_button)))
 					{ 
 						exseq_main_region_PSV_r1_Expiration();
+						iface_OCB->closeOutputValve();
 						enseq_main_region_PSV_r1_PauseExpiration_default();
 					}  else
 					{
-						did_transition = false;
+						if (iface.stop_raised)
+						{ 
+							exseq_main_region_PSV_r1_Expiration();
+							iface.Finish_raised = true;
+							enseq_main_region_PSV_r1_ventilationOff_default();
+						}  else
+						{
+							did_transition = false;
+						}
 					}
 				}
 			}
@@ -1337,13 +1488,13 @@ sc_boolean MVMStateMachine::main_region_PSV_r1_Inspiration_react(const sc_boolea
 	{ 
 		if ((main_region_PSV_react(try_transition)) == (false))
 		{ 
-			if ((*(iface.hal)).flowDrop())
+			if (iface_OCB->flowDropPSV())
 			{ 
 				exseq_main_region_PSV_r1_Inspiration();
 				react_main_region_PSV_r1__choice_0();
 			}  else
 			{
-				if (timeEvents[7])
+				if (timeEvents[8])
 				{ 
 					exseq_main_region_PSV_r1_Inspiration();
 					react_main_region_PSV_r1__choice_0();
@@ -1364,20 +1515,27 @@ sc_boolean MVMStateMachine::main_region_PSV_r1_Inspiration_react(const sc_boolea
 	return did_transition;
 }
 
-sc_boolean MVMStateMachine::main_region_PSV_r1_off_react(const sc_boolean try_transition) {
-	/* The reactions of state off. */
+sc_boolean MVMStateMachine::main_region_PSV_r1_ventilationOff_react(const sc_boolean try_transition) {
+	/* The reactions of state ventilationOff. */
 	sc_boolean did_transition = try_transition;
 	if (try_transition)
 	{ 
 		if ((main_region_PSV_react(try_transition)) == (false))
 		{ 
-			if (iface.run_raised)
+			if (iface.startVentilation_raised)
 			{ 
-				exseq_main_region_PSV_r1_off();
+				exseq_main_region_PSV_r1_ventilationOff();
 				enseq_main_region_PSV_r1_Inspiration_default();
 			}  else
 			{
-				did_transition = false;
+				if (((iface.setMode_raised)) && (((iface.setMode_value) == (P_CONTROLLED_V))))
+				{ 
+					exseq_main_region_PSV();
+					enseq_main_region_PCV_r1_ventilationOff_default();
+				}  else
+				{
+					did_transition = false;
+				}
 			}
 		} 
 	} 
@@ -1397,10 +1555,87 @@ sc_boolean MVMStateMachine::main_region_PSV_r1_InspiratoryPause_react(const sc_b
 				enseq_main_region_PSV_r1_Expiration_default();
 			}  else
 			{
-				if (timeEvents[8])
+				if (timeEvents[9])
 				{ 
 					exseq_main_region_PSV_r1_InspiratoryPause();
 					enseq_main_region_PSV_r1_Expiration_default();
+				}  else
+				{
+					did_transition = false;
+				}
+			}
+		} 
+	} 
+	return did_transition;
+}
+
+sc_boolean MVMStateMachine::main_region_TestMode_react(const sc_boolean try_transition) {
+	/* The reactions of state TestMode. */
+	sc_boolean did_transition = try_transition;
+	if (try_transition)
+	{ 
+		if ((react()) == (false))
+		{ 
+			if (iface.testPassed_raised)
+			{ 
+				exseq_main_region_TestMode();
+				iface.testMode = false;
+				enseq_main_region_PCV_default();
+			}  else
+			{
+				if (iface.testFailed_raised)
+				{ 
+					exseq_main_region_TestMode();
+					enseq_main_region_Error_default();
+				}  else
+				{
+					if (iface.testMachine_raised)
+					{ 
+						exseq_main_region_TestMode();
+						iface.testMode = true;
+						enseq_main_region_PCV_default();
+					}  else
+					{
+						did_transition = false;
+					}
+				}
+			}
+		} 
+	} 
+	return did_transition;
+}
+
+sc_boolean MVMStateMachine::main_region_Error_react(const sc_boolean try_transition) {
+	/* The reactions of state Error. */
+	sc_boolean did_transition = try_transition;
+	if (try_transition)
+	{ 
+		if ((react()) == (false))
+		{ 
+			did_transition = false;
+		} 
+	} 
+	return did_transition;
+}
+
+sc_boolean MVMStateMachine::main_region_PatientSelection_react(const sc_boolean try_transition) {
+	/* The reactions of state PatientSelection. */
+	sc_boolean did_transition = try_transition;
+	if (try_transition)
+	{ 
+		if ((react()) == (false))
+		{ 
+			if (iface.resume_raised)
+			{ 
+				exseq_main_region_PatientSelection();
+				iface.testMode = false;
+				enseq_main_region_PCV_default();
+			}  else
+			{
+				if (iface.newPatient_raised)
+				{ 
+					exseq_main_region_PatientSelection();
+					enseq_main_region_TestMode_default();
 				}  else
 				{
 					did_transition = false;

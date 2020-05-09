@@ -31,6 +31,9 @@ int main() {
 	sm.setTimer(&timer_sct);
 	std::cout << "entering" << std::endl;
 	sm.enter();
+	// finished load
+	sm.raise_startupEnded();
+	cout<< sm.isStateActive(MVMStateMachine::main_region_PCV) << endl;
 	for (;;) {
 		auto end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end - start;
@@ -48,9 +51,13 @@ int main() {
 			sm.raise_stop();
 		}
 		sm.runCycle();
-		timer_sct.updateActiveTimer(&sm, 100); // 10 milliseconds
-		if (sec > 5)
+		timer_sct.updateActiveTimer(&sm, 10); // 10 milliseconds
+		if (sec > 10)
 			break;
+		if (sm.getDefaultSCI()->isRaised_finish()){
+			std::cout << "finish raised" << std::endl;
+			break;
+		}
 	}
 	return 0;
 }

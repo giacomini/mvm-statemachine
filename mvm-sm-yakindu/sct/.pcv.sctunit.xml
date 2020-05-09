@@ -1,14 +1,8 @@
-<testsuite name="default" time="">
-  <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#default.testNormalOperation" time="">
+<testsuite name="pcv" time="">
+  <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testNormalOperation" time="">
   </testcase>
-  <testcase name="testStop" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#default.testStop" time="">
-    <failure>Assertion failed: "assert active(main_region.PCV.r1.Inspiration)" (Line 40)
-    	Expected: Inspiration, actual: [StartUp]
-    </failure>
+  <testcase name="testStop" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testStop" time="">
   </testcase>
-  <testcase name="testPause" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#default.testPause" time="">
-    <failure>Assertion failed: "assert active(main_region.PCV.r1.Inspiration)" (Line 61)
-    	Expected: Inspiration, actual: [StartUp]
-    </failure>
+  <testcase name="testPause" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testPause" time="">
   </testcase>
 </testsuite>
