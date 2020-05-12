@@ -2,12 +2,23 @@ testclass psv for statechart MVMStateMachine {
 	
 	@Test
 	operation testNormalOperation() {
+		max_rm_time = 3000
+		mock dropPAW_ITS_PCV returns (false)
 		enter
-		assert active(main_region.StartUp)
+		assert active (main_region.StartUp)
+		raise startupEnded
+		proceed 1 cycle
+		assert active (main_region.PatientSelection)
+		raise newPatient
+		proceed 1 cycle
+		assert active(main_region.TestMode)
+		raise testPassed
+		proceed 1 cycle
+		assert active (main_region.PCV.r1.VentilationOff)
 		raise setMode :MVM_mode.P_SUPPORTED_V
 		proceed 1 cycle	
 		assert active(main_region.PSV)
-		assert active(main_region.PSV.r1.ventilationOff)
+		assert active(main_region.PSV.r1.VentilationOff)
 		raise startVentilation
 		proceed 1 cycle
 		// enter inspiration
@@ -15,40 +26,44 @@ testclass psv for statechart MVMStateMachine {
 		mock dropPAW_ITS_PSV returns (false)	
 		proceed 100 ms
 		assert active(main_region.PSV.r1.Inspiration)
-		// drop in flow -> go tot expiration
-		mock dropPAW_ITS_PSV returns (true)	
+		// now pressure too high
+		mock pressureTooHighPSV returns (true)	
 		proceed 1 cycle
 		assert active(main_region.PSV.r1.Expiration)
-		mock hal.value.getPressure() returns (20.0)	
-		proceed 200 ms
-		assert active(main_region.PSV.r1.Expiration)
-		// now drop in pressure
-		mock hal.value.getPressure() returns (5.0)	
-		proceed 1 cycle
-		assert active(main_region.PSV.r1.Inspiration)
 		exit
 	}
 	@Test
 	operation testApneaLag() {
 		apnealag = 5000
+		inspiration_duration_ms = 1000
+		expiration_duration_ms = 1200
+		max_rm_time = 3000
+		mock dropPAW_ITS_PCV returns (false)
 		enter
-		assert active(main_region.StartUp)
+		assert active (main_region.StartUp)
+		raise startupEnded
+		proceed 1 cycle
+		assert active (main_region.PatientSelection)
+		raise newPatient
+		proceed 1 cycle
+		assert active(main_region.TestMode)
+		raise testPassed
+		proceed 1 cycle
+		assert active (main_region.PCV.r1.VentilationOff)
 		raise setMode :MVM_mode.P_SUPPORTED_V
 		proceed 1 cycle	
 		assert active(main_region.PSV)
-		assert active(main_region.PSV.r1.ventilationOff)
+		assert active(main_region.PSV.r1.VentilationOff)
 		raise startVentilation
 		proceed 1 cycle
 		// enter inspiration
 		assert active(main_region.PSV.r1.Inspiration)
-		mock hal.value.flowDrop returns (false)	
+		mock dropPAW_ITS_PSV returns (false)	
 		proceed 100 ms
-		assert active(main_region.PSV.r1.Inspiration)
-		// drop in flow -> go tot expiration
-		mock dropPAW_ITS_PSV returns (true)	
+		assert active(main_region.PSV.r1.Inspiration)	
+		mock pressureTooHighPSV returns (true)
 		proceed 1 cycle
 		assert active(main_region.PSV.r1.Expiration)
-		mock hal.value.getPressure() returns (20.0)
 		// proceed more than apnea lag	
 		proceed 5000 ms
 		assert active(main_region.PCV.r1.Inspiration)

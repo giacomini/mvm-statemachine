@@ -1,17 +1,8 @@
 <testsuite name="pcv" time="">
   <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testNormalOperation" time="">
-    <failure>Assertion failed: "assert active (main_region.PCV)" (Line 13)
-    	Expected: PCV, actual: [PatientSelection]
-    </failure>
   </testcase>
   <testcase name="testStop" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testStop" time="">
-    <failure>Assertion failed: "assert active (main_region.PCV.r1.Inspiration)" (Line 44)
-    	Expected: Inspiration, actual: [PatientSelection]
-    </failure>
   </testcase>
-  <testcase name="testPause" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testPause" time="">
-    <failure>Assertion failed: "assert active (main_region.PCV.r1.Inspiration)" (Line 66)
-    	Expected: Inspiration, actual: [PatientSelection]
-    </failure>
+  <testcase name="testExpiratoryPause" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testExpiratoryPause" time="">
   </testcase>
 </testsuite>

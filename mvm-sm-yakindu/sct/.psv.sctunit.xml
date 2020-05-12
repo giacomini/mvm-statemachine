@@ -1,12 +1,6 @@
 <testsuite name="psv" time="">
   <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/psv.sctunit#psv.testNormalOperation" time="">
-    <failure>Assertion failed: "assert active(main_region.PSV)" (Line 9)
-    	Expected: PSV, actual: [StartUp]
-    </failure>
   </testcase>
   <testcase name="testApneaLag" classname="platform:/resource/mvm-sm-yakindu/sct/psv.sctunit#psv.testApneaLag" time="">
-    <failure>Assertion failed: "assert active(main_region.PSV)" (Line 38)
-    	Expected: PSV, actual: [StartUp]
-    </failure>
   </testcase>
 </testsuite>

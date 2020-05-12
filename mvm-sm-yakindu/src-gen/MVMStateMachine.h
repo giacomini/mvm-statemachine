@@ -16,17 +16,19 @@
 /*! Define indices of states in the StateConfVector */
 #define SCVI_MAIN_REGION_STARTUP 0
 #define SCVI_MAIN_REGION_PCV 0
-#define SCVI_MAIN_REGION_PCV_R1_EXPIRATIONPAUSE 0
+#define SCVI_MAIN_REGION_PCV_R1_EXPIRATORYPAUSE 0
 #define SCVI_MAIN_REGION_PCV_R1_EXPIRATION 0
 #define SCVI_MAIN_REGION_PCV_R1_INSPIRATION 0
 #define SCVI_MAIN_REGION_PCV_R1_INSPIRATORYPAUSE 0
 #define SCVI_MAIN_REGION_PCV_R1_VENTILATIONOFF 0
+#define SCVI_MAIN_REGION_PCV_R1_RM 0
 #define SCVI_MAIN_REGION_PSV 0
-#define SCVI_MAIN_REGION_PSV_R1_PAUSEEXPIRATION 0
+#define SCVI_MAIN_REGION_PSV_R1_EXPIRATORYPAUSE 0
 #define SCVI_MAIN_REGION_PSV_R1_EXPIRATION 0
 #define SCVI_MAIN_REGION_PSV_R1_INSPIRATION 0
 #define SCVI_MAIN_REGION_PSV_R1_VENTILATIONOFF 0
 #define SCVI_MAIN_REGION_PSV_R1_INSPIRATORYPAUSE 0
+#define SCVI_MAIN_REGION_PSV_R1_RM 0
 #define SCVI_MAIN_REGION_TESTMODE 0
 #define SCVI_MAIN_REGION_ERROR 0
 #define SCVI_MAIN_REGION_PATIENTSELECTION 0
@@ -46,24 +48,26 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 			MVMStateMachine_last_state,
 			main_region_StartUp,
 			main_region_PCV,
-			main_region_PCV_r1_ExpirationPause,
+			main_region_PCV_r1_ExpiratoryPause,
 			main_region_PCV_r1_Expiration,
 			main_region_PCV_r1_Inspiration,
 			main_region_PCV_r1_InspiratoryPause,
-			main_region_PCV_r1_ventilationOff,
+			main_region_PCV_r1_VentilationOff,
+			main_region_PCV_r1_RM,
 			main_region_PSV,
-			main_region_PSV_r1_PauseExpiration,
+			main_region_PSV_r1_ExpiratoryPause,
 			main_region_PSV_r1_Expiration,
 			main_region_PSV_r1_Inspiration,
-			main_region_PSV_r1_ventilationOff,
+			main_region_PSV_r1_VentilationOff,
 			main_region_PSV_r1_InspiratoryPause,
+			main_region_PSV_r1_RM,
 			main_region_TestMode,
 			main_region_Error,
 			main_region_PatientSelection,
 			main_region__final_
 		} MVMStateMachineStates;
 					
-		static const sc_integer numStates = 17;
+		static const sc_integer numStates = 19;
 		
 		//! Inner class for default interface scope.
 		class DefaultSCI
@@ -101,8 +105,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				void raise_startVentilation();
 				
 				
-				/*! Raises the in event 'stop' that is defined in the default interface scope. */
-				void raise_stop();
+				/*! Raises the in event 'stopVentilation' that is defined in the default interface scope. */
+				void raise_stopVentilation();
 				
 				
 				/*! Checks if the out event 'Finish' that is defined in the default interface scope has been raised. */
@@ -121,6 +125,13 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				int16_t get_max_ins_pause() const;
 				
 				
+				/*! Gets the value of the variable 'max_rm_time' that is defined in the default interface scope. */
+				int16_t get_max_rm_time() const;
+				
+				/*! Sets the value of the variable 'max_rm_time' that is defined in the default interface scope. */
+				void set_max_rm_time(int16_t value);
+				
+				
 				/*! Gets the value of the variable 'exp_pause_button' that is defined in the default interface scope. */
 				sc_boolean get_exp_pause_button() const;
 				
@@ -133,6 +144,20 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				
 				/*! Sets the value of the variable 'ins_pause_button' that is defined in the default interface scope. */
 				void set_ins_pause_button(sc_boolean value);
+				
+				
+				/*! Gets the value of the variable 'rm_button_start' that is defined in the default interface scope. */
+				sc_boolean get_rm_button_start() const;
+				
+				/*! Sets the value of the variable 'rm_button_start' that is defined in the default interface scope. */
+				void set_rm_button_start(sc_boolean value);
+				
+				
+				/*! Gets the value of the variable 'rm_button_stop' that is defined in the default interface scope. */
+				sc_boolean get_rm_button_stop() const;
+				
+				/*! Sets the value of the variable 'rm_button_stop' that is defined in the default interface scope. */
+				void set_rm_button_stop(sc_boolean value);
 				
 				
 				
@@ -151,6 +176,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				
 				/*! Sets the value of the variable 'expiration_duration_ms' that is defined in the default interface scope. */
 				void set_expiration_duration_ms(int16_t value);
+				
 				
 				
 				
@@ -193,14 +219,17 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				sc_boolean testFailed_raised;
 				sc_boolean poweroff_raised;
 				sc_boolean startVentilation_raised;
-				sc_boolean stop_raised;
+				sc_boolean stopVentilation_raised;
 				sc_boolean Finish_raised;
 				sc_boolean setMode_raised;
 				MVM_mode setMode_value;
 				static const int16_t max_exp_pause;
 				static const int16_t max_ins_pause;
+				int16_t max_rm_time;
 				sc_boolean exp_pause_button;
 				sc_boolean ins_pause_button;
+				sc_boolean rm_button_start;
+				sc_boolean rm_button_stop;
 				int16_t inspiration_duration_ms;
 				int16_t expiration_duration_ms;
 				static const int16_t triggerWindowDelay_ms;
@@ -225,6 +254,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 						virtual void openOutputValve() = 0;
 						
 						virtual sc_boolean dropPAW_ITS_PCV() = 0;
+						
+						virtual sc_boolean pressureTooHighPCV() = 0;
 						
 						virtual sc_boolean flowDropPSV() = 0;
 						
@@ -265,8 +296,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		/*! Raises the in event 'startVentilation' that is defined in the default interface scope. */
 		void raise_startVentilation();
 		
-		/*! Raises the in event 'stop' that is defined in the default interface scope. */
-		void raise_stop();
+		/*! Raises the in event 'stopVentilation' that is defined in the default interface scope. */
+		void raise_stopVentilation();
 		
 		/*! Checks if the out event 'Finish' that is defined in the default interface scope has been raised. */
 		sc_boolean isRaised_finish() const;
@@ -280,6 +311,12 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		/*! Gets the value of the variable 'max_ins_pause' that is defined in the default interface scope. */
 		int16_t get_max_ins_pause() const;
 		
+		/*! Gets the value of the variable 'max_rm_time' that is defined in the default interface scope. */
+		int16_t get_max_rm_time() const;
+		
+		/*! Sets the value of the variable 'max_rm_time' that is defined in the default interface scope. */
+		void set_max_rm_time(int16_t value);
+		
 		/*! Gets the value of the variable 'exp_pause_button' that is defined in the default interface scope. */
 		sc_boolean get_exp_pause_button() const;
 		
@@ -291,6 +328,18 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		
 		/*! Sets the value of the variable 'ins_pause_button' that is defined in the default interface scope. */
 		void set_ins_pause_button(sc_boolean value);
+		
+		/*! Gets the value of the variable 'rm_button_start' that is defined in the default interface scope. */
+		sc_boolean get_rm_button_start() const;
+		
+		/*! Sets the value of the variable 'rm_button_start' that is defined in the default interface scope. */
+		void set_rm_button_start(sc_boolean value);
+		
+		/*! Gets the value of the variable 'rm_button_stop' that is defined in the default interface scope. */
+		sc_boolean get_rm_button_stop() const;
+		
+		/*! Sets the value of the variable 'rm_button_stop' that is defined in the default interface scope. */
+		void set_rm_button_stop(sc_boolean value);
 		
 		/*! Gets the value of the variable 'inspiration_duration_ms' that is defined in the default interface scope. */
 		int16_t get_inspiration_duration_ms() const;
@@ -365,7 +414,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		sc_boolean isStateActive(MVMStateMachineStates state) const;
 		
 		//! number of time events used by the state machine.
-		static const sc_integer timeEventsCount = 10;
+		static const sc_integer timeEventsCount = 12;
 		
 		//! number of time events that can be active at once.
 		static const sc_integer parallelTimeEventsCount = 2;
@@ -399,41 +448,56 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		sc_boolean check_main_region_PCV_r1__choice_0_tr0_tr0();
 		sc_boolean check_main_region_PCV_r1__choice_1_tr0_tr0();
 		sc_boolean check_main_region_PCV_r1__choice_1_tr1_tr1();
+		sc_boolean check_main_region_PCV_r1__choice_2_tr0_tr0();
+		sc_boolean check_main_region_PCV_r1__choice_2_tr1_tr1();
+		sc_boolean check_main_region_PSV_r1__choice_0_tr0_tr0();
 		sc_boolean check_main_region_PSV_r1__choice_0_tr1_tr1();
+		sc_boolean check_main_region_PSV_r1__choice_1_tr0_tr0();
+		sc_boolean check_main_region_PSV_r1__choice_1_tr1_tr1();
 		void effect_main_region_PCV_r1__choice_0_tr0();
 		void effect_main_region_PCV_r1__choice_0_tr1();
 		void effect_main_region_PCV_r1__choice_1_tr0();
 		void effect_main_region_PCV_r1__choice_1_tr1();
-		void effect_main_region_PSV_r1__choice_0_tr1();
+		void effect_main_region_PCV_r1__choice_2_tr0();
+		void effect_main_region_PCV_r1__choice_2_tr1();
 		void effect_main_region_PSV_r1__choice_0_tr0();
-		void enact_main_region_PCV_r1_ExpirationPause();
+		void effect_main_region_PSV_r1__choice_0_tr1();
+		void effect_main_region_PSV_r1__choice_1_tr0();
+		void effect_main_region_PSV_r1__choice_1_tr1();
+		void enact_main_region_PCV_r1_ExpiratoryPause();
 		void enact_main_region_PCV_r1_Expiration();
 		void enact_main_region_PCV_r1_Inspiration();
 		void enact_main_region_PCV_r1_InspiratoryPause();
-		void enact_main_region_PSV_r1_PauseExpiration();
+		void enact_main_region_PCV_r1_RM();
+		void enact_main_region_PSV_r1_ExpiratoryPause();
 		void enact_main_region_PSV_r1_Expiration();
 		void enact_main_region_PSV_r1_Inspiration();
 		void enact_main_region_PSV_r1_InspiratoryPause();
-		void exact_main_region_PCV_r1_ExpirationPause();
+		void enact_main_region_PSV_r1_RM();
+		void exact_main_region_PCV_r1_ExpiratoryPause();
 		void exact_main_region_PCV_r1_Expiration();
 		void exact_main_region_PCV_r1_Inspiration();
 		void exact_main_region_PCV_r1_InspiratoryPause();
-		void exact_main_region_PSV_r1_PauseExpiration();
+		void exact_main_region_PCV_r1_RM();
+		void exact_main_region_PSV_r1_ExpiratoryPause();
 		void exact_main_region_PSV_r1_Expiration();
 		void exact_main_region_PSV_r1_Inspiration();
 		void exact_main_region_PSV_r1_InspiratoryPause();
+		void exact_main_region_PSV_r1_RM();
 		void enseq_main_region_StartUp_default();
 		void enseq_main_region_PCV_default();
-		void enseq_main_region_PCV_r1_ExpirationPause_default();
+		void enseq_main_region_PCV_r1_ExpiratoryPause_default();
 		void enseq_main_region_PCV_r1_Expiration_default();
 		void enseq_main_region_PCV_r1_Inspiration_default();
 		void enseq_main_region_PCV_r1_InspiratoryPause_default();
-		void enseq_main_region_PCV_r1_ventilationOff_default();
-		void enseq_main_region_PSV_r1_PauseExpiration_default();
+		void enseq_main_region_PCV_r1_VentilationOff_default();
+		void enseq_main_region_PCV_r1_RM_default();
+		void enseq_main_region_PSV_r1_ExpiratoryPause_default();
 		void enseq_main_region_PSV_r1_Expiration_default();
 		void enseq_main_region_PSV_r1_Inspiration_default();
-		void enseq_main_region_PSV_r1_ventilationOff_default();
+		void enseq_main_region_PSV_r1_VentilationOff_default();
 		void enseq_main_region_PSV_r1_InspiratoryPause_default();
+		void enseq_main_region_PSV_r1_RM_default();
 		void enseq_main_region_TestMode_default();
 		void enseq_main_region_Error_default();
 		void enseq_main_region_PatientSelection_default();
@@ -442,17 +506,19 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void enseq_main_region_PCV_r1_default();
 		void exseq_main_region_StartUp();
 		void exseq_main_region_PCV();
-		void exseq_main_region_PCV_r1_ExpirationPause();
+		void exseq_main_region_PCV_r1_ExpiratoryPause();
 		void exseq_main_region_PCV_r1_Expiration();
 		void exseq_main_region_PCV_r1_Inspiration();
 		void exseq_main_region_PCV_r1_InspiratoryPause();
-		void exseq_main_region_PCV_r1_ventilationOff();
+		void exseq_main_region_PCV_r1_VentilationOff();
+		void exseq_main_region_PCV_r1_RM();
 		void exseq_main_region_PSV();
-		void exseq_main_region_PSV_r1_PauseExpiration();
+		void exseq_main_region_PSV_r1_ExpiratoryPause();
 		void exseq_main_region_PSV_r1_Expiration();
 		void exseq_main_region_PSV_r1_Inspiration();
-		void exseq_main_region_PSV_r1_ventilationOff();
+		void exseq_main_region_PSV_r1_VentilationOff();
 		void exseq_main_region_PSV_r1_InspiratoryPause();
+		void exseq_main_region_PSV_r1_RM();
 		void exseq_main_region_TestMode();
 		void exseq_main_region_Error();
 		void exseq_main_region_PatientSelection();
@@ -462,23 +528,27 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void exseq_main_region_PSV_r1();
 		void react_main_region_PCV_r1__choice_0();
 		void react_main_region_PCV_r1__choice_1();
+		void react_main_region_PCV_r1__choice_2();
 		void react_main_region_PSV_r1__choice_0();
+		void react_main_region_PSV_r1__choice_1();
 		void react_main_region__entry_Default();
 		void react_main_region_PCV_r1__entry_Default();
 		sc_boolean react();
 		sc_boolean main_region_StartUp_react(const sc_boolean try_transition);
 		sc_boolean main_region_PCV_react(const sc_boolean try_transition);
-		sc_boolean main_region_PCV_r1_ExpirationPause_react(const sc_boolean try_transition);
+		sc_boolean main_region_PCV_r1_ExpiratoryPause_react(const sc_boolean try_transition);
 		sc_boolean main_region_PCV_r1_Expiration_react(const sc_boolean try_transition);
 		sc_boolean main_region_PCV_r1_Inspiration_react(const sc_boolean try_transition);
 		sc_boolean main_region_PCV_r1_InspiratoryPause_react(const sc_boolean try_transition);
-		sc_boolean main_region_PCV_r1_ventilationOff_react(const sc_boolean try_transition);
+		sc_boolean main_region_PCV_r1_VentilationOff_react(const sc_boolean try_transition);
+		sc_boolean main_region_PCV_r1_RM_react(const sc_boolean try_transition);
 		sc_boolean main_region_PSV_react(const sc_boolean try_transition);
-		sc_boolean main_region_PSV_r1_PauseExpiration_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_r1_ExpiratoryPause_react(const sc_boolean try_transition);
 		sc_boolean main_region_PSV_r1_Expiration_react(const sc_boolean try_transition);
 		sc_boolean main_region_PSV_r1_Inspiration_react(const sc_boolean try_transition);
-		sc_boolean main_region_PSV_r1_ventilationOff_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_r1_VentilationOff_react(const sc_boolean try_transition);
 		sc_boolean main_region_PSV_r1_InspiratoryPause_react(const sc_boolean try_transition);
+		sc_boolean main_region_PSV_r1_RM_react(const sc_boolean try_transition);
 		sc_boolean main_region_TestMode_react(const sc_boolean try_transition);
 		sc_boolean main_region_Error_react(const sc_boolean try_transition);
 		sc_boolean main_region_PatientSelection_react(const sc_boolean try_transition);

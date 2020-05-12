@@ -5,13 +5,19 @@ testclass pcv for statechart MVMStateMachine {
 	operation testNormalOperation () {
 		inspiration_duration_ms = 1000
 		expiration_duration_ms = 1200
+		max_rm_time = 3000
 		mock dropPAW_ITS_PCV returns (false)
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
 		proceed 1 cycle
-		assert active (main_region.PCV)
-		assert active (main_region.PCV.r1.ventilationOff)
+		assert active (main_region.PatientSelection)
+		raise newPatient
+		proceed 1 cycle
+		assert active(main_region.TestMode)
+		raise testPassed
+		proceed 1 cycle
+		assert active (main_region.PCV.r1.VentilationOff)
 		raise startVentilation
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.Inspiration)
@@ -33,12 +39,20 @@ testclass pcv for statechart MVMStateMachine {
 	@Test
 	operation testStop () {
 		inspiration_duration_ms = 1000
-		expiration_duration_ms = 2000
+		expiration_duration_ms = 2000		
+		max_rm_time = 3000
 		mock dropPAW_ITS_PCV returns (false)
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
 		proceed 1 cycle
+		assert active (main_region.PatientSelection)
+		raise newPatient
+		proceed 1 cycle
+		assert active(main_region.TestMode)
+		raise testPassed
+		proceed 1 cycle
+		assert active (main_region.PCV.r1.VentilationOff)
 		raise startVentilation
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.Inspiration)
@@ -46,21 +60,29 @@ testclass pcv for statechart MVMStateMachine {
 		assert active (main_region.PCV.r1.Expiration)
 		proceed 100 ms
 		assert active (main_region.PCV.r1.Expiration) //arrives a stop			
-		raise stop
+		raise stopVentilation
 		proceed 1 cycle
-		assert active (main_region.PCV.r1.ventilationOff)
+		assert active (main_region.PCV.r1.VentilationOff)
 		exit
 	}
 
 	@Test
-	operation testPause () {
+	operation testExpiratoryPause () {
 		inspiration_duration_ms = 1000
-		expiration_duration_ms = 2000
+		expiration_duration_ms = 2000		
+		max_rm_time = 3000
 		mock dropPAW_ITS_PCV returns (false)
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
 		proceed 1 cycle
+		assert active (main_region.PatientSelection)
+		raise newPatient
+		proceed 1 cycle
+		assert active(main_region.TestMode)
+		raise testPassed
+		proceed 1 cycle
+		assert active (main_region.PCV.r1.VentilationOff)
 		raise startVentilation
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.Inspiration)
@@ -70,9 +92,9 @@ testclass pcv for statechart MVMStateMachine {
 		exp_pause_button = true // pause but the exp must finish
 		assert active (main_region.PCV.r1.Expiration)
 		proceed 1900 ms // now it can go to pause
-		assert active (main_region.PCV.r1.ExpirationPause)
+		assert active (main_region.PCV.r1.ExpiratoryPause)
 		proceed 50 ms
-		assert active (main_region.PCV.r1.ExpirationPause)
+		assert active (main_region.PCV.r1.ExpiratoryPause)
 		exp_pause_button = false // quit pause
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.Inspiration)
