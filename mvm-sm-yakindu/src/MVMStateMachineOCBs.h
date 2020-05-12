@@ -9,7 +9,6 @@ public:
 	MVMStateMachineOCBs(MVMStateMachine* machine){}
 	virtual ~MVMStateMachineOCBs();
 
-	virtual sc_boolean pressureTooHighPSV();
 
 	virtual void closeInputValve();
 
@@ -19,7 +18,22 @@ public:
 
 	virtual void openOutputValve();
 
-	virtual sc_boolean dropPressurePCV();
+	// PCV
+
+	virtual sc_boolean dropPAW_ITS_PCV();
+
+
+	// PSV
+
+	virtual sc_boolean pressureTooHighPSV();
+
+	virtual sc_boolean flowDropPSV();
+
+	virtual sc_boolean dropPAW_ITS_PSV();
+
+	virtual sc_boolean pressureTooHighPSV();
+
+
 };
 
 #endif /* MVMSTATEMACHINEOCBS_H_ */

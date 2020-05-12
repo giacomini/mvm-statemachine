@@ -9,7 +9,7 @@ sc_boolean MVMStateMachineOCBs::pressureTooHighPSV() {
 	return true;
 }
 
-sc_boolean MVMStateMachineOCBs::dropPressurePCV() {
+sc_boolean MVMStateMachineOCBs::dropPAW_ITS_PCV() {
 	std::cout << "checking dropPressurePCV" << std::endl;
 	return true;
 }
@@ -31,3 +31,15 @@ void MVMStateMachineOCBs::openOutputValve() {
 }
 
 
+sc_boolean MVMStateMachineOCBs:: flowDropPSV(){
+	std::cout << "start expiration - open out valve" << std::endl;
+	return false;
+}
+
+sc_boolean dropPAW_ITS_PSV(){
+	return false;
+}
+
+sc_boolean pressureTooHighPSV(){
+	return false;
+}
