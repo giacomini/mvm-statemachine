@@ -44,12 +44,12 @@
             <outgoingTransitions xmi:id="_--YOTpBrEeqhM9FTWtc7Dw" specification="startVentilation/closeOutputValve" target="_--PrfpBrEeqhM9FTWtc7Dw"/>
           </vertices>
           <vertices xsi:type="sgraph:Choice" xmi:id="_p8GBwJRREeq0-vaRRkvGrA" incomingTransitions="_3ETQYJOcEeqV_6JhWXCW8Q">
-            <outgoingTransitions xmi:id="_4E-oAJRREeq0-vaRRkvGrA" specification="[rm_button_start]" target="_wTdzgJRREeq0-vaRRkvGrA"/>
+            <outgoingTransitions xmi:id="_4E-oAJRREeq0-vaRRkvGrA" specification="[rm_button_start]/openInputValve" target="_wTdzgJRREeq0-vaRRkvGrA"/>
             <outgoingTransitions xmi:id="_TTWd0JRSEeq0-vaRRkvGrA" specification="[!rm_button_start]" target="_--RgpZBrEeqhM9FTWtc7Dw"/>
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_wTdzgJRREeq0-vaRRkvGrA" name="RM" incomingTransitions="_4E-oAJRREeq0-vaRRkvGrA">
-            <outgoingTransitions xmi:id="_Vx8AIJRSEeq0-vaRRkvGrA" specification="[rm_button_stop]" target="_--RgpZBrEeqhM9FTWtc7Dw"/>
-            <outgoingTransitions xmi:id="_aMcckJRSEeq0-vaRRkvGrA" specification="after max_rm_time ms" target="_--RgpZBrEeqhM9FTWtc7Dw"/>
+            <outgoingTransitions xmi:id="_Vx8AIJRSEeq0-vaRRkvGrA" specification="[rm_button_stop]/closeInputValve" target="_--RgpZBrEeqhM9FTWtc7Dw"/>
+            <outgoingTransitions xmi:id="_aMcckJRSEeq0-vaRRkvGrA" specification="after max_rm_time ms/closeInputValve" target="_--RgpZBrEeqhM9FTWtc7Dw"/>
           </vertices>
         </regions>
       </vertices>
@@ -84,11 +84,11 @@
             <outgoingTransitions xmi:id="_cVXXT5RaEeq0-vaRRkvGrA" specification="[ins_pause_button]" target="_cVX-ZZRaEeq0-vaRRkvGrA"/>
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_cVQCjJRaEeq0-vaRRkvGrA" name="RM" incomingTransitions="_cVWwMJRaEeq0-vaRRkvGrA">
-            <outgoingTransitions xmi:id="_cVcPyZRaEeq0-vaRRkvGrA" specification="[rm_button_stop]" target="_cVZMsZRaEeq0-vaRRkvGrA"/>
-            <outgoingTransitions xmi:id="_cVYlYJRaEeq0-vaRRkvGrA" specification="after max_rm_time ms" target="_cVZMsZRaEeq0-vaRRkvGrA"/>
+            <outgoingTransitions xmi:id="_cVcPyZRaEeq0-vaRRkvGrA" specification="[rm_button_stop]/closeInputValve" target="_cVZMsZRaEeq0-vaRRkvGrA"/>
+            <outgoingTransitions xmi:id="_cVYlYJRaEeq0-vaRRkvGrA" specification="after max_rm_time ms/closeInputValve" target="_cVZMsZRaEeq0-vaRRkvGrA"/>
           </vertices>
           <vertices xsi:type="sgraph:Choice" xmi:id="_cVWJLpRaEeq0-vaRRkvGrA" incomingTransitions="_cVViKZRaEeq0-vaRRkvGrA">
-            <outgoingTransitions xmi:id="_cVWwMJRaEeq0-vaRRkvGrA" specification="[rm_button_start]" target="_cVQCjJRaEeq0-vaRRkvGrA"/>
+            <outgoingTransitions xmi:id="_cVWwMJRaEeq0-vaRRkvGrA" specification="[rm_button_start]/openInputValve" target="_cVQCjJRaEeq0-vaRRkvGrA"/>
             <outgoingTransitions xmi:id="_cVYlZ5RaEeq0-vaRRkvGrA" specification="[!rm_button_start]" target="_cVZMsZRaEeq0-vaRRkvGrA"/>
           </vertices>
         </regions>
@@ -906,7 +906,7 @@
     <edges xmi:id="_4FAdMJRREeq0-vaRRkvGrA" type="Transition" element="_4E-oAJRREeq0-vaRRkvGrA" source="_D2IMD5RbEeq0-vaRRkvGrA" target="_D2IMEZRbEeq0-vaRRkvGrA">
       <children xsi:type="notation:DecorationNode" xmi:id="_4FBEQZRREeq0-vaRRkvGrA" type="TransitionExpression">
         <styles xsi:type="notation:ShapeStyle" xmi:id="_4FBEQpRREeq0-vaRRkvGrA"/>
-        <layoutConstraint xsi:type="notation:Location" xmi:id="_4FBEQ5RREeq0-vaRRkvGrA" x="-17" y="10"/>
+        <layoutConstraint xsi:type="notation:Location" xmi:id="_4FBEQ5RREeq0-vaRRkvGrA" x="-21" y="-94"/>
       </children>
       <styles xsi:type="notation:ConnectorStyle" xmi:id="_4FAdMZRREeq0-vaRRkvGrA" routing="Rectilinear" lineColor="4210752"/>
       <styles xsi:type="notation:FontStyle" xmi:id="_4FBEQJRREeq0-vaRRkvGrA" fontName="Verdana"/>

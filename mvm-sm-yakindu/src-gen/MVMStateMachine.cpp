@@ -700,6 +700,7 @@ void MVMStateMachine::effect_main_region_PCV_r1__choice_1_tr1()
 
 void MVMStateMachine::effect_main_region_PCV_r1__choice_2_tr0()
 {
+	iface_OCB->openInputValve();
 	enseq_main_region_PCV_r1_RM_default();
 }
 
@@ -720,6 +721,7 @@ void MVMStateMachine::effect_main_region_PSV_r1__choice_0_tr1()
 
 void MVMStateMachine::effect_main_region_PSV_r1__choice_1_tr0()
 {
+	iface_OCB->openInputValve();
 	enseq_main_region_PSV_r1_RM_default();
 }
 
@@ -1676,12 +1678,14 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_RM_react(const sc_boolean try_tra
 			if (iface.rm_button_stop)
 			{ 
 				exseq_main_region_PCV_r1_RM();
+				iface_OCB->closeInputValve();
 				enseq_main_region_PCV_r1_Expiration_default();
 			}  else
 			{
 				if (timeEvents[5])
 				{ 
 					exseq_main_region_PCV_r1_RM();
+					iface_OCB->closeInputValve();
 					enseq_main_region_PCV_r1_Expiration_default();
 				}  else
 				{
@@ -1883,12 +1887,14 @@ sc_boolean MVMStateMachine::main_region_PSV_r1_RM_react(const sc_boolean try_tra
 			if (iface.rm_button_stop)
 			{ 
 				exseq_main_region_PSV_r1_RM();
+				iface_OCB->closeInputValve();
 				enseq_main_region_PSV_r1_Expiration_default();
 			}  else
 			{
 				if (timeEvents[11])
 				{ 
 					exseq_main_region_PSV_r1_RM();
+					iface_OCB->closeInputValve();
 					enseq_main_region_PSV_r1_Expiration_default();
 				}  else
 				{
