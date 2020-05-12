@@ -7,16 +7,16 @@ testclass psv for statechart MVMStateMachine {
 		raise setMode :MVM_mode.P_SUPPORTED_V
 		proceed 1 cycle	
 		assert active(main_region.PSV)
-		assert active(main_region.PSV.r1.off)
-		raise run
+		assert active(main_region.PSV.r1.ventilationOff)
+		raise startVentilation
 		proceed 1 cycle
 		// enter inspiration
 		assert active(main_region.PSV.r1.Inspiration)
-		mock hal.value.flowDrop returns (false)	
+		mock dropPAW_ITS_PSV returns (false)	
 		proceed 100 ms
 		assert active(main_region.PSV.r1.Inspiration)
 		// drop in flow -> go tot expiration
-		mock hal.value.flowDrop returns (true)	
+		mock dropPAW_ITS_PSV returns (true)	
 		proceed 1 cycle
 		assert active(main_region.PSV.r1.Expiration)
 		mock hal.value.getPressure() returns (20.0)	
@@ -36,8 +36,8 @@ testclass psv for statechart MVMStateMachine {
 		raise setMode :MVM_mode.P_SUPPORTED_V
 		proceed 1 cycle	
 		assert active(main_region.PSV)
-		assert active(main_region.PSV.r1.off)
-		raise run
+		assert active(main_region.PSV.r1.ventilationOff)
+		raise startVentilation
 		proceed 1 cycle
 		// enter inspiration
 		assert active(main_region.PSV.r1.Inspiration)
@@ -45,7 +45,7 @@ testclass psv for statechart MVMStateMachine {
 		proceed 100 ms
 		assert active(main_region.PSV.r1.Inspiration)
 		// drop in flow -> go tot expiration
-		mock hal.value.flowDrop returns (true)	
+		mock dropPAW_ITS_PSV returns (true)	
 		proceed 1 cycle
 		assert active(main_region.PSV.r1.Expiration)
 		mock hal.value.getPressure() returns (20.0)

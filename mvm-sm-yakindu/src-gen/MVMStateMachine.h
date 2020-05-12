@@ -30,6 +30,7 @@
 #define SCVI_MAIN_REGION_TESTMODE 0
 #define SCVI_MAIN_REGION_ERROR 0
 #define SCVI_MAIN_REGION_PATIENTSELECTION 0
+#define SCVI_MAIN_REGION__FINAL_ 0
 
 
 class MVMStateMachine : public TimedStatemachineInterface, public StatemachineInterface
@@ -58,10 +59,11 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 			main_region_PSV_r1_InspiratoryPause,
 			main_region_TestMode,
 			main_region_Error,
-			main_region_PatientSelection
+			main_region_PatientSelection,
+			main_region__final_
 		} MVMStateMachineStates;
 					
-		static const sc_integer numStates = 16;
+		static const sc_integer numStates = 17;
 		
 		//! Inner class for default interface scope.
 		class DefaultSCI
@@ -91,11 +93,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				void raise_testFailed();
 				
 				
-				/*! Gets the value of the variable 'testMode' that is defined in the default interface scope. */
-				sc_boolean get_testMode() const;
-				
-				/*! Sets the value of the variable 'testMode' that is defined in the default interface scope. */
-				void set_testMode(sc_boolean value);
+				/*! Raises the in event 'poweroff' that is defined in the default interface scope. */
+				void raise_poweroff();
 				
 				
 				/*! Raises the in event 'startVentilation' that is defined in the default interface scope. */
@@ -159,18 +158,18 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				int16_t get_triggerWindowDelay_ms() const;
 				
 				
-				/*! Gets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
-				int16_t get_min_expiration_time() const;
+				/*! Gets the value of the variable 'min_exp_time_psv' that is defined in the default interface scope. */
+				int16_t get_min_exp_time_psv() const;
 				
-				/*! Sets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
-				void set_min_expiration_time(int16_t value);
+				/*! Sets the value of the variable 'min_exp_time_psv' that is defined in the default interface scope. */
+				void set_min_exp_time_psv(int16_t value);
 				
 				
-				/*! Gets the value of the variable 'max_insp_phase_psv' that is defined in the default interface scope. */
-				int16_t get_max_insp_phase_psv() const;
+				/*! Gets the value of the variable 'max_insp_time_psv' that is defined in the default interface scope. */
+				int16_t get_max_insp_time_psv() const;
 				
-				/*! Sets the value of the variable 'max_insp_phase_psv' that is defined in the default interface scope. */
-				void set_max_insp_phase_psv(int16_t value);
+				/*! Sets the value of the variable 'max_insp_time_psv' that is defined in the default interface scope. */
+				void set_max_insp_time_psv(int16_t value);
 				
 				
 				/*! Gets the value of the variable 'apnealag' that is defined in the default interface scope. */
@@ -192,7 +191,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				sc_boolean testMachine_raised;
 				sc_boolean testPassed_raised;
 				sc_boolean testFailed_raised;
-				sc_boolean testMode;
+				sc_boolean poweroff_raised;
 				sc_boolean startVentilation_raised;
 				sc_boolean stop_raised;
 				sc_boolean Finish_raised;
@@ -205,8 +204,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 				int16_t inspiration_duration_ms;
 				int16_t expiration_duration_ms;
 				static const int16_t triggerWindowDelay_ms;
-				int16_t min_expiration_time;
-				int16_t max_insp_phase_psv;
+				int16_t min_exp_time_psv;
+				int16_t max_insp_time_psv;
 				int16_t apnealag;
 				
 				
@@ -225,11 +224,11 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 						
 						virtual void openOutputValve() = 0;
 						
-						virtual sc_boolean dropPressurePCV() = 0;
+						virtual sc_boolean dropPAW_ITS_PCV() = 0;
 						
 						virtual sc_boolean flowDropPSV() = 0;
 						
-						virtual sc_boolean dropPressurePSV() = 0;
+						virtual sc_boolean dropPAW_ITS_PSV() = 0;
 						
 						virtual sc_boolean pressureTooHighPSV() = 0;
 						
@@ -260,11 +259,8 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		/*! Raises the in event 'testFailed' that is defined in the default interface scope. */
 		void raise_testFailed();
 		
-		/*! Gets the value of the variable 'testMode' that is defined in the default interface scope. */
-		sc_boolean get_testMode() const;
-		
-		/*! Sets the value of the variable 'testMode' that is defined in the default interface scope. */
-		void set_testMode(sc_boolean value);
+		/*! Raises the in event 'poweroff' that is defined in the default interface scope. */
+		void raise_poweroff();
 		
 		/*! Raises the in event 'startVentilation' that is defined in the default interface scope. */
 		void raise_startVentilation();
@@ -311,17 +307,17 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		/*! Gets the value of the variable 'triggerWindowDelay_ms' that is defined in the default interface scope. */
 		int16_t get_triggerWindowDelay_ms() const;
 		
-		/*! Gets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
-		int16_t get_min_expiration_time() const;
+		/*! Gets the value of the variable 'min_exp_time_psv' that is defined in the default interface scope. */
+		int16_t get_min_exp_time_psv() const;
 		
-		/*! Sets the value of the variable 'min_expiration_time' that is defined in the default interface scope. */
-		void set_min_expiration_time(int16_t value);
+		/*! Sets the value of the variable 'min_exp_time_psv' that is defined in the default interface scope. */
+		void set_min_exp_time_psv(int16_t value);
 		
-		/*! Gets the value of the variable 'max_insp_phase_psv' that is defined in the default interface scope. */
-		int16_t get_max_insp_phase_psv() const;
+		/*! Gets the value of the variable 'max_insp_time_psv' that is defined in the default interface scope. */
+		int16_t get_max_insp_time_psv() const;
 		
-		/*! Sets the value of the variable 'max_insp_phase_psv' that is defined in the default interface scope. */
-		void set_max_insp_phase_psv(int16_t value);
+		/*! Sets the value of the variable 'max_insp_time_psv' that is defined in the default interface scope. */
+		void set_max_insp_time_psv(int16_t value);
 		
 		/*! Gets the value of the variable 'apnealag' that is defined in the default interface scope. */
 		int16_t get_apnealag() const;
@@ -441,6 +437,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void enseq_main_region_TestMode_default();
 		void enseq_main_region_Error_default();
 		void enseq_main_region_PatientSelection_default();
+		void enseq_main_region__final__default();
 		void enseq_main_region_default();
 		void enseq_main_region_PCV_r1_default();
 		void exseq_main_region_StartUp();
@@ -459,6 +456,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		void exseq_main_region_TestMode();
 		void exseq_main_region_Error();
 		void exseq_main_region_PatientSelection();
+		void exseq_main_region__final_();
 		void exseq_main_region();
 		void exseq_main_region_PCV_r1();
 		void exseq_main_region_PSV_r1();
@@ -484,6 +482,7 @@ class MVMStateMachine : public TimedStatemachineInterface, public StatemachineIn
 		sc_boolean main_region_TestMode_react(const sc_boolean try_transition);
 		sc_boolean main_region_Error_react(const sc_boolean try_transition);
 		sc_boolean main_region_PatientSelection_react(const sc_boolean try_transition);
+		sc_boolean main_region__final__react(const sc_boolean try_transition);
 		void clearInEvents();
 		void clearOutEvents();
 		

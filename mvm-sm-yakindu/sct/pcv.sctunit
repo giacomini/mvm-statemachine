@@ -5,14 +5,14 @@ testclass pcv for statechart MVMStateMachine {
 	operation testNormalOperation () {
 		inspiration_duration_ms = 1000
 		expiration_duration_ms = 1200
-		mock dropPressurePCV returns (false)
+		mock dropPAW_ITS_PCV returns (false)
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
 		proceed 1 cycle
 		assert active (main_region.PCV)
 		assert active (main_region.PCV.r1.ventilationOff)
-		raise run
+		raise startVentilation
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.Inspiration)
 		proceed 1000 ms
@@ -34,12 +34,12 @@ testclass pcv for statechart MVMStateMachine {
 	operation testStop () {
 		inspiration_duration_ms = 1000
 		expiration_duration_ms = 2000
-		mock dropPressurePCV returns (false)
+		mock dropPAW_ITS_PCV returns (false)
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
 		proceed 1 cycle
-		raise run
+		raise startVentilation
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.Inspiration)
 		proceed 1000 ms
@@ -56,12 +56,12 @@ testclass pcv for statechart MVMStateMachine {
 	operation testPause () {
 		inspiration_duration_ms = 1000
 		expiration_duration_ms = 2000
-		mock dropPressurePCV returns (false)
+		mock dropPAW_ITS_PCV returns (false)
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
 		proceed 1 cycle
-		raise run
+		raise startVentilation
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.Inspiration)
 		proceed 1000 ms
