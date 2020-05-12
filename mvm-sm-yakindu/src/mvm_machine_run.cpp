@@ -33,7 +33,15 @@ int main() {
 	sm.enter();
 	// finished load
 	sm.raise_startupEnded();
-	cout<< sm.isStateActive(MVMStateMachine::main_region_PCV) << endl;
+	sm.runCycle();
+	// new patient
+	sm.raise_newPatient();
+	sm.runCycle();
+	// test passed
+	sm.raise_testPassed();
+	sm.runCycle();
+	//
+	cout<< "PCV mode? " << std::boolalpha << sm.isStateActive(MVMStateMachine::main_region_PCV) << endl;
 	for (;;) {
 		auto end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end - start;
@@ -42,16 +50,16 @@ int main() {
 		if (sec > 2 && sec < 4 && ! running){
 			std::cout << "start running" << std::endl;
 			running = true;
-			sm.raise_run();
+			sm.raise_startVentilation();
 		}
 		// after 4 seconds stop it
 		if (sec > 4 && running) {
 			std::cout << "stopping" << std::endl;
 			running = false;
-			sm.raise_stop();
+			sm.raise_stopVentilation();
 		}
 		sm.runCycle();
-		timer_sct.updateActiveTimer(&sm, 10); // 10 milliseconds
+		timer_sct.updateActiveTimer(&sm, 1); // 10 milliseconds
 		if (sec > 10)
 			break;
 		if (sm.getDefaultSCI()->isRaised_finish()){

@@ -733,7 +733,6 @@ void MVMStateMachine::enact_main_region_PCV_r1_ExpiratoryPause()
 {
 	/* Entry action for state 'ExpiratoryPause'. */
 	timer->setTimer(this, (sc_eventid)(&timeEvents[0]), MVMStateMachine::DefaultSCI::max_exp_pause, false);
-	iface_OCB->closeOutputValve();
 }
 
 /* Entry action for state 'Expiration'. */
@@ -1558,6 +1557,7 @@ sc_boolean MVMStateMachine::main_region_PCV_r1_Expiration_react(const sc_boolean
 			if (timeEvents[1])
 			{ 
 				exseq_main_region_PCV_r1_Expiration();
+				iface_OCB->closeOutputValve();
 				react_main_region_PCV_r1__choice_0();
 			}  else
 			{
