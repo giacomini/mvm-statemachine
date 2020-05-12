@@ -19,8 +19,8 @@ int main() {
 	bool running = false;
 	auto start = std::chrono::system_clock::now();
 	MVMStateMachine sm;
-	HAL myHAL;
-	sm.set_hal(&myHAL);
+	//HAL myHAL;
+	//sm.set_hal(&myHAL);
 	MVMStateMachineOCBs operationCallback(&sm);
 	sm.setDefaultSCI_OCB(&operationCallback);
 	std::cout << "init state machine" << std::endl;
