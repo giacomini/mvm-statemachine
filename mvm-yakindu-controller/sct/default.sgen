@@ -1,0 +1,14 @@
+GeneratorModel for yakindu::cpp {
+
+	statechart MVMStateMachine {
+	
+
+		feature Outlet {
+			targetProject = "mvm-sm-yakindu"
+			targetFolder = "src-gen"
+			libraryTargetFolder = "src"
+			
+		}
+	}
+
+}
