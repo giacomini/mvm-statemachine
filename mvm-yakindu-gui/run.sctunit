@@ -12,7 +12,7 @@ testclass run for statechart gui_model {
 		assert active (main_region.AlarmTest) 
 		raise pass
 		assert active (main_region.Ventilation) 
-		assert active (main_region.Ventilation._region0.MainScreen) 
+		assert active (main_region.Ventilation.mainscreen.show_rt_data) 
 		exit
 	}
 }
