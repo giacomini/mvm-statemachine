@@ -7,11 +7,6 @@ testclass psv for statechart MVMStateMachine {
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
-		proceed 1 cycle
-		assert active (main_region.PatientSelection)
-		raise newPatient
-		proceed 1 cycle
-		assert active(main_region.TestMode)
 		raise testPassed
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.VentilationOff)
@@ -42,12 +37,6 @@ testclass psv for statechart MVMStateMachine {
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
-		proceed 1 cycle
-		assert active (main_region.PatientSelection)
-		raise newPatient
-		proceed 1 cycle
-		assert active(main_region.TestMode)
-		raise testPassed
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.VentilationOff)
 		raise setMode :MVM_mode.P_SUPPORTED_V
