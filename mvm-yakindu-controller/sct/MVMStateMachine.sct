@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0">
-  <sgraph:Statechart xmi:id="_Vf3WcJAlEeqC7ZQZABm9BQ" specification="//@EventDriven&#xA;// Use the event driven execution model.&#xA;// Runs a run-to-completion step&#xA;// each time an event is raised.&#xA;// Switch to cycle based behavior&#xA;// by specifying '@CycleBased(200)'&#xA;// instead.&#xA;@CycleBased(100)&#xD;&#xA;&#xA;&#xA;//@ChildFirstExecution&#xA;// In composite states, execute&#xA;// child states first.&#xA;// @ParentFirstExecution does the opposite.&#xA;&#xA;//import: &quot;HAL.h&quot;&#xA;import: &quot;VentilationModes.h&quot;&#xD;&#xA;&#xA;&#xA;// Define events&#xA;// and variables here. &#xA;// Use CTRL + Space for content assist.&#xA;&#xA;interface:&#xA;&#x9;// exit startup&#xA;&#x9;in event startupEnded&#xA;&#x9;in event resume &#x9;&#xA;&#x9;in event newPatient &#x9;&#xA;&#x9;in event&#x9;testMachine&#xA;&#x9;in event&#x9;testPassed&#xA;&#x9;in event&#x9;testFailed&#xA;&#x9;// poweroff&#xA;&#x9;in event poweroff&#xA; &#x9;//var hal: pointer&lt;HAL> &#xA;&#x9;in event startVentilation&#xA;&#x9;in event stopVentilation&#xA;&#x9;out event Finish // save data&#xA;&#x9;in event setMode: MVM_mode&#xA;&#x9;// common constants&#x9;&#xA;&#x9;const max_exp_pause: int16_t = 2000&#xA;&#x9;const max_ins_pause: int16_t = 1000&#xA;&#x9;//common variable&#xA;&#x9;var max_rm_time: int16_t&#xA;&#x9;// buttons&#xA;&#x9;var exp_pause: bool = false&#xA;&#x9;var ins_pause: bool = false&#xA;&#x9;var rm_start: bool = false&#xA;&#x9;var rm_stop: bool = false&#xA;&#x9;&#xA;&#x9;// operations on the valves&#xA;&#x9;operation closeInputValve(): void&#xA;&#x9;operation openInputValve(): void&#xA;&#x9;operation closeOutputValve(): void&#xA;&#x9;operation openOutputValve(): void&#xA;&#x9;// PCV&#xA;&#x9;var inspiration_duration_ms: int16_t&#xA;&#x9;var expiration_duration_ms: int16_t&#xA;&#x9;// PCV trigger window&#xA;&#x9;//  [drop-in(PAW)>ITS_PCV]&#xA;    operation dropPAW_ITS_PCV(): bool     &#xA;    //PAW>MaxPinsp&#xA;&#x9;operation pressureTooHighPCV(): bool&#xA;    const  triggerWindowDelay_ms: int16_t = 700&#xA;    // PSV&#xA;&#x9;var min_exp_time_psv: int16_t = 2000&#xA;&#x9;var max_insp_time_psv: int16_t = 2000&#xA;&#x9;var apnealag: int16_t = 3000&#xA;    operation flowDropPSV(): bool &#xA;    //  [drop-in(PAW)>ITS_PSV]&#xA;    operation dropPAW_ITS_PSV(): bool &#xA;    //PAW>MaxPinsp&#xA;&#x9;operation pressureTooHighPSV(): bool" name="MVMStateMachine" domainID="com.yakindu.domain.c">
+  <sgraph:Statechart xmi:id="_Vf3WcJAlEeqC7ZQZABm9BQ" specification="//@EventDriven&#xA;// Use the event driven execution model.&#xA;// Runs a run-to-completion step&#xA;// each time an event is raised.&#xA;// Switch to cycle based behavior&#xA;// by specifying '@CycleBased(200)'&#xA;// instead.&#xA;@CycleBased(100)&#xD;&#xA;&#xA;&#xA;//@ChildFirstExecution&#xA;// In composite states, execute&#xA;// child states first.&#xA;// @ParentFirstExecution does the opposite.&#xA;&#xA;//import: &quot;HAL.h&quot;&#xA;import: &quot;VentilationModes.h&quot;&#xD;&#xA;&#xA;&#xA;// Define events&#xA;// and variables here. &#xA;// Use CTRL + Space for content assist.&#xA;&#xA;interface:&#xA;&#x9;// exit startup&#xA;&#x9;in event startupEnded&#xA;&#x9;in event resume &#x9;&#xA;&#x9;in event newPatient &#x9;&#xA;&#x9;in event&#x9;testMachine&#xA;&#x9;in event&#x9;testPassed&#xA;&#x9;in event&#x9;testFailed&#xA;&#x9;// poweroff&#xA;&#x9;in event poweroff&#xA; &#x9;//var hal: pointer&lt;HAL> &#xA;&#x9;in event startVentilation&#xA;&#x9;in event stopVentilation&#xA;&#x9;out event Finish // save data&#xA;&#x9;in event setMode: MVM_mode&#xA;&#x9;// common constants&#x9;&#xA;&#x9;const max_exp_pause: int16_t = 2000&#xA;&#x9;const max_ins_pause: int16_t = 1000&#xA;&#x9;//common variable&#xA;&#x9;var max_rm_time: int16_t&#xA;&#x9;// buttons&#xA;&#x9;var exp_pause: bool = false&#xA;&#x9;var ins_pause: bool = false&#xA;&#x9;var rm_start: bool = false&#xA;&#x9;var rm_stop: bool = false&#xA;&#x9;&#xA;&#x9;// operations on the valves&#xA;&#x9;operation closeInputValve(): void&#xA;&#x9;operation openInputValve(): void&#xA;&#x9;operation closeOutputValve(): void&#xA;&#x9;operation openOutputValve(): void&#xA;    //PAW>MaxPinsp&#xA;&#x9;operation pawGTMaxPinsp(): bool&#xA;&#x9;// PCV&#xA;&#x9;var inspiration_duration_ms: int16_t&#xA;&#x9;var expiration_duration_ms: int16_t&#xA;&#x9;// PCV trigger window&#xA;&#x9;//  [drop-in(PAW)>ITS_PCV]&#xA;    operation dropPAW_ITS_PCV(): bool     &#xA;    const  triggerWindowDelay_ms: int16_t = 700&#xA;    // PSV&#xA;&#x9;operation min_exp_time_psv(): int16_t&#xA;&#x9;var max_insp_time_psv: int16_t = 2000&#xA;&#x9;var apnealag: int16_t = 3000&#xA;    operation flowDropPSV(): bool &#xA;    //  [drop-in(PAW)>ITS_PSV]&#xA;    operation dropPAW_ITS_PSV(): bool &#xA;" name="MVMStateMachine" domainID="com.yakindu.domain.c">
     <regions xmi:id="_--FTVJBrEeqhM9FTWtc7Dw" name="main region">
       <vertices xsi:type="sgraph:Entry" xmi:id="_--Y1YZBrEeqhM9FTWtc7Dw">
         <outgoingTransitions xmi:id="_--ZcaZBrEeqhM9FTWtc7Dw" specification="" target="_--XANZBrEeqhM9FTWtc7Dw"/>
@@ -23,7 +23,7 @@
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_--PrfpBrEeqhM9FTWtc7Dw" specification="entry/openInputValve&#xD;&#xA;exit/closeInputValve" name="Inspiration" incomingTransitions="_--YOTpBrEeqhM9FTWtc7Dw _--SHqZBrEeqhM9FTWtc7Dw _--VyDZBrEeqhM9FTWtc7Dw _--PEXZBrEeqhM9FTWtc7Dw _cVaal5RaEeq0-vaRRkvGrA _--VK-ZBrEeqhM9FTWtc7Dw">
             <outgoingTransitions xmi:id="_--Q5h5BrEeqhM9FTWtc7Dw" specification="after inspiration_duration_ms ms" target="_yFW-UJB0EeqhM9FTWtc7Dw"/>
-            <outgoingTransitions xmi:id="_X6NTMJRdEeq0-vaRRkvGrA" specification="[pressureTooHighPCV]" target="_--RgpZBrEeqhM9FTWtc7Dw"/>
+            <outgoingTransitions xmi:id="_X6NTMJRdEeq0-vaRRkvGrA" specification="[pawGTMaxPinsp]" target="_--RgpZBrEeqhM9FTWtc7Dw"/>
           </vertices>
           <vertices xsi:type="sgraph:Choice" xmi:id="_--PEVZBrEeqhM9FTWtc7Dw" incomingTransitions="_--TVw5BrEeqhM9FTWtc7Dw">
             <outgoingTransitions xmi:id="_--T83pBrEeqhM9FTWtc7Dw" specification="[exp_pause]" target="_--Uj-JBrEeqhM9FTWtc7Dw"/>
@@ -70,7 +70,7 @@
           <vertices xsi:type="sgraph:State" xmi:id="_cVQpkJRaEeq0-vaRRkvGrA" specification="entry/openInputValve&#xD;&#xA;exit/closeInputValve" name="Inspiration" incomingTransitions="_cVU7FZRaEeq0-vaRRkvGrA _cVWwQ5RaEeq0-vaRRkvGrA _cVbBqpRaEeq0-vaRRkvGrA _cVViHJRaEeq0-vaRRkvGrA">
             <outgoingTransitions xmi:id="_cVRQoJRaEeq0-vaRRkvGrA" specification="[flowDropPSV]" target="_cVQCk5RaEeq0-vaRRkvGrA"/>
             <outgoingTransitions xmi:id="_cVUT85RaEeq0-vaRRkvGrA" specification="after max_insp_time_psv ms" target="_cVQCk5RaEeq0-vaRRkvGrA"/>
-            <outgoingTransitions xmi:id="_cVYlcJRaEeq0-vaRRkvGrA" specification="[pressureTooHighPSV]" target="_cVZMsZRaEeq0-vaRRkvGrA"/>
+            <outgoingTransitions xmi:id="_cVYlcJRaEeq0-vaRRkvGrA" specification="[pawGTMaxPinsp]" target="_cVZMsZRaEeq0-vaRRkvGrA"/>
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_cVSe3pRaEeq0-vaRRkvGrA" name="VentilationOff" incomingTransitions="_cVR3vpRaEeq0-vaRRkvGrA _cVc22ZRaEeq0-vaRRkvGrA">
             <outgoingTransitions xmi:id="_cVWwQ5RaEeq0-vaRRkvGrA" specification="startVentilation/closeOutputValve" target="_cVQpkJRaEeq0-vaRRkvGrA"/>
@@ -277,7 +277,7 @@
           <styles xsi:type="notation:ShapeStyle" xmi:id="_--OdRJBrEeqhM9FTWtc7Dw" fontName="Verdana" fillColor="15981773" lineColor="12632256"/>
           <styles xsi:type="notation:FontStyle" xmi:id="_--OdQ5BrEeqhM9FTWtc7Dw"/>
           <styles xsi:type="notation:BooleanValueStyle" xmi:id="_--OdQpBrEeqhM9FTWtc7Dw" name="isHorizontal" booleanValue="true"/>
-          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_--OdQZBrEeqhM9FTWtc7Dw" x="230" width="1175" height="601"/>
+          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_--OdQZBrEeqhM9FTWtc7Dw" x="308" y="101" width="1175" height="601"/>
         </children>
         <children xmi:id="_--FTVZBrEeqhM9FTWtc7Dw" type="State" element="_--FTYZBrEeqhM9FTWtc7Dw">
           <children xsi:type="notation:DecorationNode" xmi:id="_--FTXpBrEeqhM9FTWtc7Dw" type="StateName">
@@ -760,11 +760,11 @@
     <edges xmi:id="_9Q7GQJHREeqDn91Az3io6A" type="Transition" element="_9Q6fMJHREeqDn91Az3io6A" source="_--OdQJBrEeqhM9FTWtc7Dw" target="_uRM-oJHREeqDn91Az3io6A">
       <children xsi:type="notation:DecorationNode" xmi:id="_9Q7GRJHREeqDn91Az3io6A" type="TransitionExpression">
         <styles xsi:type="notation:ShapeStyle" xmi:id="_9Q7GRZHREeqDn91Az3io6A"/>
-        <layoutConstraint xsi:type="notation:Location" xmi:id="_9Q7GRpHREeqDn91Az3io6A" x="-15" y="-15"/>
+        <layoutConstraint xsi:type="notation:Location" xmi:id="_9Q7GRpHREeqDn91Az3io6A" x="24" y="-15"/>
       </children>
       <styles xsi:type="notation:ConnectorStyle" xmi:id="_9Q7GQZHREeqDn91Az3io6A" routing="Rectilinear" lineColor="4210752"/>
       <styles xsi:type="notation:FontStyle" xmi:id="_9Q7GQ5HREeqDn91Az3io6A" fontName="Verdana"/>
-      <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_9Q7GQpHREeqDn91Az3io6A" points="[0, -84, 147, 3]$[-134, -84, 13, 3]"/>
+      <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_9Q7GQpHREeqDn91Az3io6A" points="[0, -185, 225, 3]$[-212, -185, 13, 3]"/>
       <sourceAnchor xsi:type="notation:IdentityAnchor" xmi:id="_9Q7tUJHREeqDn91Az3io6A" id="(0.0,0.9018518518518519)"/>
       <targetAnchor xsi:type="notation:IdentityAnchor" xmi:id="_9Q7tUZHREeqDn91Az3io6A" id="(0.06666666666666667,0.26666666666666666)"/>
     </edges>
@@ -901,11 +901,11 @@
     <edges xmi:id="_L-NgkJU0EeqbEKlkRG3qcw" type="Transition" element="_L-IoEJU0EeqbEKlkRG3qcw" source="_--XAIJBrEeqhM9FTWtc7Dw" target="_--OdQJBrEeqhM9FTWtc7Dw">
       <children xsi:type="notation:DecorationNode" xmi:id="_L-OusJU0EeqbEKlkRG3qcw" type="TransitionExpression">
         <styles xsi:type="notation:ShapeStyle" xmi:id="_L-OusZU0EeqbEKlkRG3qcw"/>
-        <layoutConstraint xsi:type="notation:Location" xmi:id="_L-OuspU0EeqbEKlkRG3qcw" x="-7" y="10"/>
+        <layoutConstraint xsi:type="notation:Location" xmi:id="_L-OuspU0EeqbEKlkRG3qcw" x="-46" y="10"/>
       </children>
       <styles xsi:type="notation:ConnectorStyle" xmi:id="_L-NgkZU0EeqbEKlkRG3qcw" routing="Rectilinear" lineColor="4210752"/>
       <styles xsi:type="notation:FontStyle" xmi:id="_L-OHoJU0EeqbEKlkRG3qcw" fontName="Verdana"/>
-      <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_L-NgkpU0EeqbEKlkRG3qcw" points="[0, 0, -79, -203]$[30, 0, -49, -203]$[30, 274, -49, 71]$[74, 274, -5, 71]"/>
+      <bendpoints xsi:type="notation:RelativeBendpoints" xmi:id="_L-NgkpU0EeqbEKlkRG3qcw" points="[0, 0, -157, -304]$[30, 0, -127, -304]$[30, 274, -127, -30]$[152, 274, -5, -30]"/>
       <sourceAnchor xsi:type="notation:IdentityAnchor" xmi:id="_L-RK8JU0EeqbEKlkRG3qcw" id="(1.0,0.7547169811320755)"/>
       <targetAnchor xsi:type="notation:IdentityAnchor" xmi:id="_L-RyAJU0EeqbEKlkRG3qcw" id="(0.004553734061930784,0.5312084993359893)"/>
     </edges>
