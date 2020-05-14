@@ -1,0 +1,4 @@
+<testsuite name="run" time="">
+  <testcase name="testCompleteSelftests" classname="platform:/resource/mvm-yakindu-gui/run.sctunit#run.testCompleteSelftests" time="">
+  </testcase>
+</testsuite>

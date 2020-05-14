@@ -1,0 +1,18 @@
+testclass run for statechart gui_model {
+	
+	@Test
+	operation testCompleteSelftests() {
+		enter
+		espRunnning = false
+		raise startupFinished
+		assert active (main_region.Start) 
+		raise new_patient
+		assert active (main_region.SelfTest) 
+		raise pass
+		assert active (main_region.AlarmTest) 
+		raise pass
+		assert active (main_region.Ventilation) 
+		assert active (main_region.Ventilation.r1.StandBy) 
+		exit
+	}
+}

@@ -21,20 +21,17 @@ void MVMStateMachineOCBs::openOutputValve() {
 	std::cout << "start expiration - open out valve" << std::endl;
 }
 
+sc_boolean MVMStateMachineOCBs::pawGTMaxPinsp(){
+	std::cout << "checking pressure TooHigh" << std::endl;
+	return false;
+}
+
 // PCV
 sc_boolean MVMStateMachineOCBs::dropPAW_ITS_PCV() {
 	std::cout << "checking dropPAW_ITS_PCV" << std::endl;
 	return false;
 }
-sc_boolean MVMStateMachineOCBs::pressureTooHighPCV(){
-	std::cout << "checking pressureTooHighPCV" << std::endl;
-	return false;
-}
 // PSV
-sc_boolean MVMStateMachineOCBs::pressureTooHighPSV() {
-	std::cout << "checking pressureTooHighPSV" << std::endl;
-	return false;
-}
 sc_boolean MVMStateMachineOCBs::flowDropPSV(){
 	std::cout << "checking flowDropPSV" << std::endl;
 	return false;
@@ -43,4 +40,10 @@ sc_boolean MVMStateMachineOCBs::dropPAW_ITS_PSV(){
 	std::cout << "checking dropPAW_ITS_PSV" << std::endl;
 	return false;
 }
+
+int16_t MVMStateMachineOCBs::min_exp_time_psv(){
+	std::cout << "computing  min_exp_time_psv" << std::endl;
+	return 200;
+}
+
 

@@ -1,6 +1,6 @@
 <testsuite name="psv" time="">
-  <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/psv.sctunit#psv.testNormalOperation" time="">
+  <testcase name="testNormalOperation" classname="platform:/resource/mvm-yakindu-controller/sct/psv.sctunit#psv.testNormalOperation" time="">
   </testcase>
-  <testcase name="testApneaLag" classname="platform:/resource/mvm-sm-yakindu/sct/psv.sctunit#psv.testApneaLag" time="">
+  <testcase name="testApneaLag" classname="platform:/resource/mvm-yakindu-controller/sct/psv.sctunit#psv.testApneaLag" time="">
   </testcase>
 </testsuite>

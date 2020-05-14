@@ -7,7 +7,6 @@ testclass psv for statechart MVMStateMachine {
 		enter
 		assert active (main_region.StartUp)
 		raise startupEnded
-		raise testPassed
 		proceed 1 cycle
 		assert active (main_region.PCV.r1.VentilationOff)
 		raise setMode :MVM_mode.P_SUPPORTED_V
@@ -22,7 +21,7 @@ testclass psv for statechart MVMStateMachine {
 		proceed 100 ms
 		assert active(main_region.PSV.r1.Inspiration)
 		// now pressure too high
-		mock pressureTooHighPSV returns (true)	
+		mock pawGTMaxPinsp returns (true)	
 		proceed 1 cycle
 		assert active(main_region.PSV.r1.Expiration)
 		exit
@@ -50,7 +49,7 @@ testclass psv for statechart MVMStateMachine {
 		mock dropPAW_ITS_PSV returns (false)	
 		proceed 100 ms
 		assert active(main_region.PSV.r1.Inspiration)	
-		mock pressureTooHighPSV returns (true)
+		mock pawGTMaxPinsp returns (true)
 		proceed 1 cycle
 		assert active(main_region.PSV.r1.Expiration)
 		// proceed more than apnea lag	

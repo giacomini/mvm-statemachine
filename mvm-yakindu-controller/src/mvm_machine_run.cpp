@@ -34,14 +34,9 @@ int main() {
 	// finished load
 	sm.raise_startupEnded();
 	sm.runCycle();
-	// new patient
-	sm.raise_newPatient();
-	sm.runCycle();
-	// test passed
-	sm.raise_testPassed();
-	sm.runCycle();
 	//
 	cout<< "PCV mode? " << std::boolalpha << sm.isStateActive(MVMStateMachine::main_region_PCV) << endl;
+	cout<< "ventilation off? " << std::boolalpha << sm.isStateActive(MVMStateMachine::main_region_PCV_r1_VentilationOff) << endl;
 	for (;;) {
 		auto end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end - start;

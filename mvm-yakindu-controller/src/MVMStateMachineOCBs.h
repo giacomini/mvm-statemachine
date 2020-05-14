@@ -19,19 +19,22 @@ public:
 
 	virtual void openOutputValve();
 
+	// general
+
+	virtual sc_boolean pawGTMaxPinsp();
+
+
 	// PCV
 
 	virtual sc_boolean dropPAW_ITS_PCV();
 
-	virtual sc_boolean pressureTooHighPCV();
-
 	// PSV
-
-	virtual sc_boolean pressureTooHighPSV();
 
 	virtual sc_boolean flowDropPSV();
 
 	virtual sc_boolean dropPAW_ITS_PSV();
+
+	virtual int16_t min_exp_time_psv();
 };
 
 #endif /* MVMSTATEMACHINEOCBS_H_ */

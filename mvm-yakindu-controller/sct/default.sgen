@@ -4,7 +4,7 @@ GeneratorModel for yakindu::cpp {
 	
 
 		feature Outlet {
-			targetProject = "mvm-sm-yakindu"
+			targetProject = "mvm-yakindu-controller"
 			targetFolder = "src-gen"
 			libraryTargetFolder = "src"
 			

@@ -1,8 +1,8 @@
 <testsuite name="pcv" time="">
-  <testcase name="testNormalOperation" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testNormalOperation" time="">
+  <testcase name="testNormalOperation" classname="platform:/resource/mvm-yakindu-controller/sct/pcv.sctunit#pcv.testNormalOperation" time="">
   </testcase>
-  <testcase name="testStop" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testStop" time="">
+  <testcase name="testStop" classname="platform:/resource/mvm-yakindu-controller/sct/pcv.sctunit#pcv.testStop" time="">
   </testcase>
-  <testcase name="testExpiratoryPause" classname="platform:/resource/mvm-sm-yakindu/sct/pcv.sctunit#pcv.testExpiratoryPause" time="">
+  <testcase name="testExpiratoryPause" classname="platform:/resource/mvm-yakindu-controller/sct/pcv.sctunit#pcv.testExpiratoryPause" time="">
   </testcase>
 </testsuite>
