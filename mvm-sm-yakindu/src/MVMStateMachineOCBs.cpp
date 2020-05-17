@@ -1,4 +1,4 @@
-#include <MVMStateMachineOCBs.h>
+#include "src/MVMStateMachineOCBs.h"
 #include <iostream>
 
 MVMStateMachineOCBs::~MVMStateMachineOCBs() {

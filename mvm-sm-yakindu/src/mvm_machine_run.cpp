@@ -8,9 +8,9 @@
 
 #include <iostream>
 #include <chrono>
-#include "MVMStateMachine.h"
-#include "CPPTimerInterface.h"
-#include "MVMStateMachineOCBs.h"
+#include "src-gen/MVMStateMachine.h"
+#include "src-gen/CPPTimerinterface.h"
+#include "src/MVMStateMachineOCBs.h"
 
 using namespace std;
 

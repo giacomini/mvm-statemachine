@@ -4,10 +4,10 @@
 #define MVMSTATEMACHINE_H_
 
 
-#include <VentilationModes.h>
-#include "..\src\sc_types.h"
-#include "..\src\StatemachineInterface.h"
-#include "..\src\TimedStatemachineInterface.h"
+#include "src/VentilationModes.h"
+#include "src/sc_types.h"
+#include "src/StatemachineInterface.h"
+#include "src/TimedStatemachineInterface.h"
 
 /*! \file Header of the state machine 'MVMStateMachine'.
 */
